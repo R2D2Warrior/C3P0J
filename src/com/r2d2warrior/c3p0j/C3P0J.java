@@ -5,14 +5,13 @@ import org.pircbotx.Configuration;
 
 import com.r2d2warrior.c3p0j.command.CommandListener;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class C3P0J
 {
 
 	public static void main(String[] args) throws Exception
 	{
 
- 		Configuration config = new Configuration.Builder()
+ 		Configuration<PircBotX> config = new Configuration.Builder<PircBotX>()
 			.setName("C3P0J")
 			.setLogin("R2D2")
 			.setRealName("C3P0J (PircBotX) - by R2D2Warrior")
@@ -29,7 +28,6 @@ public class C3P0J
 			
 			.setServerHostname("irc.esper.net")
 			.addAutoJoinChannel("#C3P0")
-			//.setNickservPassword(new Scanner(new File("C:\\data.data")).nextLine())
 			
 			.buildConfiguration();
  		
