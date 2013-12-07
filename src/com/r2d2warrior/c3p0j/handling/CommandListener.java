@@ -6,7 +6,6 @@ import org.pircbotx.hooks.ListenerAdapter;
 public class CommandListener extends ListenerAdapter<PircBotX>
 {
 
-	@SuppressWarnings("unchecked")
 	public void onCommand(CommandEvent<PircBotX> event)
 	{
 		event.getBot().getCommandRegistry().executeCommand(event);

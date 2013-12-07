@@ -25,7 +25,6 @@ import com.google.common.collect.Multimap;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.pircbotx.snapshot.ChannelSnapshot;
 import org.pircbotx.snapshot.UserChannelMapSnapshot;
 import org.pircbotx.snapshot.UserSnapshot;
@@ -34,7 +33,7 @@ import org.pircbotx.snapshot.UserSnapshot;
  * A many to many map of users to channels.
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Slf4j
+
 public class UserChannelMap<U extends User, C extends Channel> {
 	protected final Multimap<U, C> userToChannelMap;
 	protected final Multimap<C, U> channelToUserMap;

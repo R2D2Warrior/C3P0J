@@ -123,7 +123,7 @@ public class User implements Comparable<User> {
 			bot.sendRaw().rawLine("WHOIS " + getNick() + " " + getNick());
 			WaitForQueue waitForQueue = new WaitForQueue(bot);
 			while (true) {
-				WhoisEvent event = waitForQueue.waitFor(WhoisEvent.class);
+				WhoisEvent<PircBotX> event = waitForQueue.waitFor(WhoisEvent.class);
 				if (!event.getNick().equals(nick))
 					continue;
 

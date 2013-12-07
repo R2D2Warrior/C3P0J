@@ -33,8 +33,7 @@ public final class Utils {
 	private Utils() {
 	}
 
-	@SuppressWarnings("unchecked")
-	public static void dispatchEvent(PircBotX bot, Event event) {
+	public static void dispatchEvent(PircBotX bot, Event<PircBotX> event) {
 		bot.getConfiguration().getListenerManager().dispatchEvent(event);
 	}
 	
@@ -72,7 +71,7 @@ public final class Utils {
 	}
 
 	public static void addBotToMDC(PircBotX bot) {
-		Configuration configuration = bot.getConfiguration();
+		Configuration<PircBotX> configuration = bot.getConfiguration();
 		MDC.put("pircbotx.id", String.valueOf(bot.getBotId()));
 		MDC.put("pircbotx.server", configuration.getServerHostname());
 		MDC.put("pircbotx.port", String.valueOf(configuration.getServerPort()));

@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.PeekingIterator;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
 import com.r2d2warrior.c3p0j.handling.CommandRegistry;
 
@@ -670,8 +669,8 @@ public class Configuration<B extends PircBotX> {
 	 * Factory for various bot classes. 
 	 */
 	public static class BotFactory {
-		public UserChannelDao createUserChannelDao(PircBotX bot) {
-			return new UserChannelDao(bot, bot.getConfiguration().getBotFactory());
+		public UserChannelDao<User, Channel> createUserChannelDao(PircBotX bot) {
+			return new UserChannelDao<User, Channel>(bot, bot.getConfiguration().getBotFactory());
 		}
 
 		public OutputRaw createOutputRaw(PircBotX bot) {

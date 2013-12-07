@@ -27,14 +27,12 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.PeekingIterator;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
-import com.r2d2warrior.c3p0j.handling.CommandRegistry;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
