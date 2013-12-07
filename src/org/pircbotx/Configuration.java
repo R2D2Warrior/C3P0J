@@ -25,7 +25,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.PeekingIterator;
-import com.r2d2warrior.c3p0j.command.CommandRegistry;
+import com.r2d2warrior.c3p0j.commands.GenericCommand;
+import com.r2d2warrior.c3p0j.handling.CommandRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -702,9 +703,9 @@ public class Configuration<B extends PircBotX> {
 		}
 		
 		// Added by R2D2Warrior
-		public CommandRegistry createCommandRegistry(PircBotX bot)
+		public CommandRegistry<GenericCommand> createCommandRegistry(PircBotX bot)
 		{
-			return new CommandRegistry(bot);
+			return new CommandRegistry<GenericCommand>(bot);
 		}
 
 		public DccHandler createDccHandler(PircBotX bot) {

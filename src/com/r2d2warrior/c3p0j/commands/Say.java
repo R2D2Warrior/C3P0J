@@ -2,9 +2,9 @@ package com.r2d2warrior.c3p0j.commands;
 
 import org.pircbotx.PircBotX;
 
-import com.r2d2warrior.c3p0j.command.CommandEvent;
+import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="say", info="Sends message to channel", adminOnly=true)
+@Command(name="say", desc="Sends message to channel", adminOnly=true)
 public class Say extends GenericCommand
 {
 	private CommandEvent<PircBotX> event;

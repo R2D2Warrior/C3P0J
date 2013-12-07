@@ -26,8 +26,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.PeekingIterator;
-import com.r2d2warrior.c3p0j.command.CommandEvent;
-import com.r2d2warrior.c3p0j.command.CommandRegistry;
+import com.r2d2warrior.c3p0j.handling.CommandEvent;
+import com.r2d2warrior.c3p0j.handling.CommandRegistry;
 
 import java.io.BufferedReader;
 import java.io.Closeable;

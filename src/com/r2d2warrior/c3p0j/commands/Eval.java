@@ -3,12 +3,13 @@ package com.r2d2warrior.c3p0j.commands;
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
 import org.pircbotx.User;
+
 import bsh.EvalError;
 import bsh.Interpreter;
 
-import com.r2d2warrior.c3p0j.command.CommandEvent;
+import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="eval", info="Evaluate a method within PircBotX", adminOnly=true)
+@Command(name="eval", desc="Evaluate a method within PircBotX", adminOnly=true)
 public class Eval extends GenericCommand
 {
 	private CommandEvent<PircBotX> event;
@@ -36,16 +37,17 @@ public class Eval extends GenericCommand
 			i.set("event",  event);
 			i.set("user", user);
 			i.set("channel", channel);
-			i.set("conf", bot.getConfiguration());
+			i.set("config", bot.getConfiguration());
 			i.set("dao",  bot.getUserChannelDao());
 			i.set("admins", bot.getConfiguration().getAdminAccounts().toString());
+			i.set("cmdReg", bot.getCommandRegistry());
 			
 			i.eval("thing = " + eval);
 			result = i.get("thing").toString();
 		}
 		catch (EvalError e)
 		{
-			user.send().notice("Error occurred while evaluating: \"" + eval + "\"");
+			event.respondToUser("Error occurred while evaluating: \"" + eval + "\"");
 			e.printStackTrace();
 		}
 		

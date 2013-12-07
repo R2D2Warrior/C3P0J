@@ -10,6 +10,6 @@ import java.lang.annotation.ElementType;
 public @interface Command
 {
 	String name();
-	String info() default "";
+	String desc() default "";
 	boolean adminOnly() default false;
 }

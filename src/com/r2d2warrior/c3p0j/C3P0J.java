@@ -3,7 +3,7 @@ package com.r2d2warrior.c3p0j;
 import org.pircbotx.PircBotX;
 import org.pircbotx.Configuration;
 
-import com.r2d2warrior.c3p0j.command.CommandListener;
+import com.r2d2warrior.c3p0j.handling.CommandListener;
 
 public class C3P0J
 {

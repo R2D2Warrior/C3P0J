@@ -20,9 +20,8 @@ package org.pircbotx;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
-import com.r2d2warrior.c3p0j.command.CommandRegistry;
-import com.r2d2warrior.c3p0j.old.CommandHandler;
-import com.r2d2warrior.c3p0j.old.TestCommand;
+import com.r2d2warrior.c3p0j.commands.GenericCommand;
+import com.r2d2warrior.c3p0j.handling.CommandRegistry;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -96,7 +95,7 @@ public class PircBotX implements Comparable<PircBotX> {
 	@Getter
 	protected final InputParser inputParser;
 	@Getter
-	protected final CommandRegistry commandRegistry; // Added by R2D2Warrior
+	protected final CommandRegistry<GenericCommand> commandRegistry; // Added by R2D2Warrior
 	/**
 	 * User-Channel mapper
 	 */

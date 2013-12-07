@@ -22,7 +22,7 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.events.*;
 import org.pircbotx.hooks.types.*;
 
-import com.r2d2warrior.c3p0j.command.CommandEvent;
+import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
 /**
  * Adapter that provides methods to capture each event separately, removing
