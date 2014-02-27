@@ -41,7 +41,7 @@ import org.pircbotx.output.OutputUser;
  */
 @Data
 @EqualsAndHashCode(of = {"userId", "bot"})
-@Setter(AccessLevel.PROTECTED)
+@Setter(AccessLevel.PUBLIC)
 public class User implements Comparable<User> {
 	protected final PircBotX bot;
 	@Getter(AccessLevel.PROTECTED)

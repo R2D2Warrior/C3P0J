@@ -34,9 +34,36 @@ public class CommandRegistry<T extends GenericCommand>
 		{
 			cmd = cls.getAnnotation(Command.class);
 			commands.add(
-					new CommandInfo<T>(cmd.name(), cmd.desc(), cmd.adminOnly(), cls)
+					new CommandInfo<T>(cmd.name(), cmd.desc(), cmd.syntax(), cmd.adminOnly(), cls)
 					);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean executeCommand(CommandEvent<PircBotX> event)
+	{		
+		try
+		{
+			if (!isCommand(event.getCommandName()))
+				return true;
+			Class<T> cls = getCommandClass(event.getCommandName());
+			CommandInfo<T> info = getCommandInfo(cls);
+	
+			if (info.isAdminOnly() && !event.getUser().isAdmin())
+				return true;
+			
+			Constructor<T> constuct = (Constructor<T>) cls.getConstructors()[0];
+			constuct.setAccessible(true);
+
+			constuct.newInstance(event).execute();
+		}
+		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
 	}
 	
 	public Class<T> getCommandClass(String name)
@@ -83,29 +110,5 @@ public class CommandRegistry<T extends GenericCommand>
 	public boolean isCommand(String name)
 	{
 		return getCommandClass(name) != null;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public boolean executeCommand(CommandEvent<PircBotX> event)
-	{
-		Class<T> cls = getCommandClass(event.getCommandName());
-		CommandInfo<T> info = getCommandInfo(cls);
-	
-		if (info.isAdminOnly() && !event.getUser().isAdmin())
-			return false;
-		
-		Constructor<T> constuct = (Constructor<T>) cls.getConstructors()[0];
-		constuct.setAccessible(true);
-		try
-		{
-			constuct.newInstance(event).execute();
-		}
-		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-		{
-			e.printStackTrace();
-			return false;
-		}
-
-		return true;
 	}
 }

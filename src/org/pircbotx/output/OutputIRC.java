@@ -44,7 +44,8 @@ public class OutputIRC {
 	 */
 	public void joinChannel(String channel) {
 		checkArgument(StringUtils.isNotBlank(channel), "Channel '%s' is blank", channel);
-		bot.sendRaw().rawLine("JOIN " + channel);
+		if (!bot.getConfiguration().getBlockedChannels().contains(channel))		// ADDED BY R2D2WARRIOR
+			bot.sendRaw().rawLine("JOIN " + channel);
 	}
 
 	/**

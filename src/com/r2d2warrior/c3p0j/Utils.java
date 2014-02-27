@@ -1,5 +1,7 @@
 package com.r2d2warrior.c3p0j;
 
+import java.util.List;
+
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.types.GenericChannelEvent;
@@ -30,6 +32,30 @@ public class Utils
 		i.set("admins", bot.getConfiguration().getAdminAccounts().toString());
 		i.set("cmdReg", bot.getCommandRegistry());
 		
+		i.eval("import com.r2d2warrior.c3p0j.Utils");
+		i.eval("import org.apache.commons.lang3.StringUtils");
+		
 		return i;
+	}
+	
+	public static String getRange(List<String> list, int start)
+	{
+		return getRange(list, start, list.size()-1);
+	}
+	
+	public static String getRange(List<String> list, int start, int end)
+	{
+		if (end >= list.size())
+			end = list.size()-1;
+		if (start < 0)
+			start = 0;
+		
+		String ret = "";
+		for (int x = start; x <= end; x++)
+		{
+			ret += list.get(x);
+			ret += (x == end) ? "" : " ";
+		}
+		return ret;
 	}
 }

@@ -4,7 +4,7 @@ import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="part", desc="Parts current or specified channel", adminOnly=true)
+@Command(name="part", desc="Parts current or specified channel", syntax="part [#channel]", adminOnly=true)
 public class Part extends GenericCommand
 {
 	private CommandEvent<PircBotX> event;
@@ -15,15 +15,30 @@ public class Part extends GenericCommand
 		this.event = event;
 	}
 	
-	// TODO accept part message
 	public void execute()
 	{
-		String chan = (event.hasNoArgs()) ? event.getChannel().getName() : event.getCommandArgs().get(0);
+		String chan = (event.hasChannelArg()) ? event.getArgumentsList().get(0) : event.getChannel().getName();
+		String defaultMsg = "Parted by " + event.getUser().getNick();
+		String msg = "";
+		
+		if (event.hasNoArgs())
+		{
+			msg = defaultMsg;
+		}
+		else
+		{
+			if (event.hasChannelArg())
+			{
+				msg = (event.getArgumentsList().size() > 1) ? event.getArgRange(1) : defaultMsg;
+			}
+			else
+				msg = event.getArguments();
+		}
 		
 		if (event.getBot().getUserChannelDao().channelExists(chan))
 		{
-			event.getBot().getUserChannelDao().getChannel(chan).send().part();
 			event.respondToUser("Trying to part channel: " + chan);
+			event.getBot().getUserChannelDao().getChannel(chan).send().part(msg);
 		}
 		else
 			event.respondToUser("Not in channel: " + chan);

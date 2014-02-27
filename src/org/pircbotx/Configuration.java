@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -119,6 +120,7 @@ public class Configuration<B extends PircBotX> {
 	//New data added by R2D2Warrior
 	protected final List<String> adminAccounts;
 	protected final ImmutableMap<String, String> prefixes;
+	protected final List<String> blockedChannels;
 
 	/**
 	 * Use {@link Configuration.Builder#build() }.
@@ -194,6 +196,7 @@ public class Configuration<B extends PircBotX> {
 		//New added by R2D2Warrior
 		this.adminAccounts  = builder.getAdminAccounts();
 		this.prefixes = ImmutableMap.copyOf(builder.getPrefixes());
+		this.blockedChannels = builder.getBlockedChannels();
 	}
 
 	@Accessors(chain = true)
@@ -372,11 +375,15 @@ public class Configuration<B extends PircBotX> {
 		/**
 		 * List of the account names of bot admins
 		 */
-		protected List<String> adminAccounts = new ArrayList<String>();
+		protected List<String> adminAccounts = new ArrayList<>();
 		/**
 		 * Map of prefixes and the response command to be use in sendrawline
 		 */
 		protected Map<String, String> prefixes = Maps.newHashMap();
+		/**
+		 * List of channels not to join or send messages to
+		 */
+		protected List<String> blockedChannels = new ArrayList<>();
 		/**
 		 * The {@link BotFactory} to use
 		 */
@@ -387,9 +394,6 @@ public class Configuration<B extends PircBotX> {
 		 */
 		public Builder() {
 			capHandlers.add(new EnableCapHandler("multi-prefix", true));
-			capHandlers.add(new EnableCapHandler("away-notify", true));
-			capHandlers.add(new EnableCapHandler("extended-join", true));
-			capHandlers.add(new EnableCapHandler("account-notify", true));
 			channelModeHandlers.addAll(InputParser.DEFAULT_CHANNEL_MODE_HANDLERS);
 		}
 
@@ -441,6 +445,7 @@ public class Configuration<B extends PircBotX> {
 			//Added by R2D2Warrior
 			this.adminAccounts = configuration.getAdminAccounts();
 			this.prefixes = configuration.getPrefixes();
+			this.blockedChannels = configuration.getBlockedChannels();
 		}
 		/**
 		 * Copy values from another builder. 
@@ -490,6 +495,7 @@ public class Configuration<B extends PircBotX> {
 			//Added by R2D2Warrior;
 			this.adminAccounts = otherBuilder.getAdminAccounts();
 			this.prefixes = otherBuilder.getPrefixes();
+			this.blockedChannels = otherBuilder.getBlockedChannels();
 		}
 
 		/**
@@ -561,9 +567,27 @@ public class Configuration<B extends PircBotX> {
 			return this;
 		}
 		
+		public Builder<B> addAdminAccounts(String... accounts)
+		{
+			getAdminAccounts().addAll(Arrays.asList(accounts));
+			return this;
+		}
+		
 		public Builder<B> addPrefix(String pre, String command)
 		{
 			getPrefixes().put(pre, command);
+			return this;
+		}
+		
+		public Builder<B> addBlockedChannel(String channel)
+		{
+			getBlockedChannels().add(channel);
+			return this;
+		}
+		
+		public Builder<B> addBlockedChannels(String... channels)
+		{
+			getBlockedChannels().addAll(Arrays.asList(channels));
 			return this;
 		}
 		//--

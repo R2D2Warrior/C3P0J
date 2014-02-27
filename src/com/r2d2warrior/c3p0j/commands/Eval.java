@@ -7,7 +7,7 @@ import bsh.Interpreter;
 import com.r2d2warrior.c3p0j.Utils;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="eval", desc="Evaluate a method within PircBotX", adminOnly=true)
+@Command(name="eval", desc="Evaluate a method within PircBotX", syntax="eval <code>", adminOnly=true)
 public class Eval extends GenericCommand
 {
 	private CommandEvent<PircBotX> event;
@@ -21,16 +21,22 @@ public class Eval extends GenericCommand
 	@Override
 	public void execute()
 	{
+		
+		if (event.hasNoArgs())
+		{
+			event.respondToUser("SYNTAX: " + event.getCommandInfo().getSyntax());
+			return;
+		}
 
-		String eval = event.getArgString();
+		String eval = event.getArguments();
 			
 		String result = "";
 		try
 		{
 			Interpreter i = Utils.createDefaultInterpreter(event);
 			
-			i.eval("thing = " + eval);
-			result = i.get("thing").toString();
+			i.eval("item = " + eval);
+			result = i.get("item").toString();
 		}
 		catch (EvalError e)
 		{
