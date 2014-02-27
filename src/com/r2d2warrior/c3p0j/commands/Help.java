@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.PircBotX;
 
+import com.google.common.collect.BiMap;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.handling.CommandInfo;
 
@@ -24,7 +25,8 @@ public class Help extends GenericCommand
 	{
 		if (event.hasNoArgs())
 		{
-			event.respond("Valid command prefixes: " + event.getBot().getConfiguration().getPrefixes().toString());
+			BiMap<String, String> prefixes = event.getBot().getConfiguration().getPrefixes();
+			event.respond("Valid command prefixes: " + prefixes.keySet().toString());
 			event.respond("Syntax infomation -- Required: <arg>, Optional: [arg]");
 			List<String> commandList = new ArrayList<String>();
 			List<String> adminCommands = new ArrayList<String>();

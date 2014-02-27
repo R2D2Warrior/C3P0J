@@ -20,6 +20,8 @@ package org.pircbotx;
 
 import static com.google.common.base.Preconditions.*;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
@@ -119,7 +121,7 @@ public class Configuration<B extends PircBotX> {
 	protected final BotFactory botFactory;
 	//New data added by R2D2Warrior
 	protected final List<String> adminAccounts;
-	protected final ImmutableMap<String, String> prefixes;
+	protected final BiMap<String, String> prefixes;
 	protected final List<String> blockedChannels;
 
 	/**
@@ -195,7 +197,7 @@ public class Configuration<B extends PircBotX> {
 		this.botFactory = builder.getBotFactory();
 		//New added by R2D2Warrior
 		this.adminAccounts  = builder.getAdminAccounts();
-		this.prefixes = ImmutableMap.copyOf(builder.getPrefixes());
+		this.prefixes = HashBiMap.create(builder.getPrefixes());
 		this.blockedChannels = builder.getBlockedChannels();
 	}
 
