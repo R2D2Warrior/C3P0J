@@ -73,7 +73,7 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 	
 	public boolean hasChannelArg()
 	{
-		return argumentsList.size() > 0 && getBot().getConfiguration().getChannelPrefixes().contains(argumentsList.get(0).substring(0, 1));
+		return !hasNoArgs() && getBot().getConfiguration().getChannelPrefixes().contains(argumentsList.get(0).substring(0, 1));
 	}
 	
 	public String getArgRange(int start)
@@ -83,6 +83,6 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 	
 	public String getArgRange(int start, int end)
 	{
-		return Utils.getRange(argumentsList, start);
+		return Utils.getRange(argumentsList, start, end);
 	}
 }
