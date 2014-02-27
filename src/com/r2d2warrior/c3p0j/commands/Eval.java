@@ -10,12 +10,10 @@ import com.r2d2warrior.c3p0j.handling.CommandEvent;
 @Command(name="eval", desc="Evaluate a method within PircBotX", syntax="eval <code>", adminOnly=true)
 public class Eval extends GenericCommand
 {
-	private CommandEvent<PircBotX> event;
 	
 	public Eval(CommandEvent<PircBotX> event)
 	{
 		super(event);
-		this.event = event;
 	}
 	
 	@Override
@@ -24,7 +22,7 @@ public class Eval extends GenericCommand
 		
 		if (event.hasNoArgs())
 		{
-			event.respondToUser("SYNTAX: " + event.getCommandInfo().getSyntax());
+			event.respondToUser("SYNTAX: " + info.getSyntax());
 			return;
 		}
 

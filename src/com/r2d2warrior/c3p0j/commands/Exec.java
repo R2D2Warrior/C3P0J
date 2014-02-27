@@ -11,33 +11,34 @@ import com.r2d2warrior.c3p0j.handling.CommandEvent;
 @Command(name="exec", desc="Execute a method within PircBotX", syntax="exec <code>", adminOnly=true)
 public class Exec extends GenericCommand
 {
-	private CommandEvent<PircBotX> event;
 	
 	public Exec(CommandEvent<PircBotX> event)
 	{
 		super(event);
-		this.event = event;
 	}
 	
 	public void execute()
 	{
-		String arg = event.getArguments();
 		
+		if (event.hasNoArgs())
+		{
+			event.respondToUser("SYNTAX: " + info.getSyntax());
+			return;
+		}
+		
+		String exec = event.getArguments();
+
 		try
 		{
-			if (event.hasNoArgs())
-				event.respondToUser("Enter something to execute");
-			else
-			{
 				Interpreter i = Utils.createDefaultInterpreter(event);
-				event.respondToUser("Trying to run \"" + arg + "\"");
-				i.eval(arg);
-			}
+				event.respondToUser("Trying to run \"" + exec + "\"");
+				i.eval(exec);
+			
 		}
 		catch (EvalError e)
 		{
 			e.printStackTrace();
-			event.respondToUser("Error while running \"" + arg + "\"");
+			event.respondToUser("Error while running \"" + exec + "\"");
 		}
 	}
 }
