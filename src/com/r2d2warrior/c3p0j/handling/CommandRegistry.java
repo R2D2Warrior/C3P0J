@@ -39,19 +39,24 @@ public class CommandRegistry<T extends GenericCommand>
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public boolean executeCommand(CommandEvent<PircBotX> event)
-	{		
+	public String executeCommand(CommandEvent<PircBotX> event)
+	{
+		String noPermissionError = "You don't have permission to use that command.";
+		String doesntExistError = "Command does not exist: " + event.getCommandName();
+		String commandError = "Error while executing command: " + event.getCommandName();
+		
+		if (!isCommand(event.getCommandName()))
+			return doesntExistError;
+		
+		Class<T> cls = getCommandClass(event.getCommandName());
+		CommandInfo<T> info = getCommandInfo(cls);
+
+		if (info.isAdminOnly() && !event.getUser().isAdmin())
+			return noPermissionError;
+		
 		try
-		{
-			if (!isCommand(event.getCommandName()))
-				return true;
-			Class<T> cls = getCommandClass(event.getCommandName());
-			CommandInfo<T> info = getCommandInfo(cls);
-	
-			if (info.isAdminOnly() && !event.getUser().isAdmin())
-				return true;
-			
+		{	
+			@SuppressWarnings("unchecked")
 			Constructor<T> constuct = (Constructor<T>) cls.getConstructors()[0];
 			constuct.setAccessible(true);
 
@@ -60,10 +65,9 @@ public class CommandRegistry<T extends GenericCommand>
 		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 		{
 			e.printStackTrace();
-			return false;
+			return commandError;
 		}
-
-		return true;
+		return "";
 	}
 	
 	public Class<T> getCommandClass(String name)

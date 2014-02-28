@@ -31,10 +31,5 @@ public abstract class GenericCommand
 		this.info = event.getBot().getCommandRegistry().getCommandInfo(event);
 	}
 	
-	public CommandInfo<GenericCommand> getCommandInfo()
-	{
-		return info;
-	}
-	
 	public abstract void execute();
 }
