@@ -1,11 +1,12 @@
 package com.r2d2warrior.c3p0j.commands;
 
 import org.pircbotx.PircBotX;
+
 import bsh.EvalError;
 import bsh.Interpreter;
 
-import com.r2d2warrior.c3p0j.Utils;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
+import com.r2d2warrior.c3p0j.utils.Utils;
 
 @Command(name="eval", desc="Evaluate a method within PircBotX", syntax="eval <code>", adminOnly=true)
 public class Eval extends GenericCommand

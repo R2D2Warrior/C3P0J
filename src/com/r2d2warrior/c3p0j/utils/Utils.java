@@ -1,7 +1,6 @@
-package com.r2d2warrior.c3p0j;
+package com.r2d2warrior.c3p0j.utils;
 
 import java.util.List;
-
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.types.GenericChannelEvent;
@@ -57,5 +56,10 @@ public class Utils
 			ret += (x == end) ? "" : " ";
 		}
 		return ret;
+	}
+	
+	public static String firstCap(String s)
+	{
+		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 }

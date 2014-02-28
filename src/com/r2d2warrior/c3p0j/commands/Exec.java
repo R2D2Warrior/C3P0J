@@ -5,8 +5,8 @@ import org.pircbotx.PircBotX;
 import bsh.EvalError;
 import bsh.Interpreter;
 
-import com.r2d2warrior.c3p0j.Utils;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
+import com.r2d2warrior.c3p0j.utils.Utils;
 
 @Command(name="exec", desc="Execute a method within PircBotX", syntax="exec <code>", adminOnly=true)
 public class Exec extends GenericCommand

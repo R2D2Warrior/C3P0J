@@ -502,6 +502,11 @@ public class InputParser implements Closeable {
 			//Add to private message
 			bot.getUserChannelDao().addUserToPrivate(source);
 			configuration.getListenerManager().dispatchEvent(new PrivateMessageEvent<PircBotX>(bot, source, message));
+			if (bot.getCommandRegistry().isCommand(message.split(" ")[0]))
+			{
+				// First word of the private message is a command -- call command event with null channel
+				configuration.getListenerManager().dispatchEvent(new CommandEvent<PircBotX>(bot, null, source, message));
+			}
 		} else if (command.equals("JOIN")) {
 			// Someone is joining a channel.
 			if (sourceNick.equalsIgnoreCase(bot.getNick())) {
