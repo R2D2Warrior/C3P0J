@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 
 public class WebUtils
 {
@@ -39,6 +42,23 @@ public class WebUtils
 			e.printStackTrace();
 		}
 		
+		return null;
+	}
+	
+	public static String getRandomFML()
+	{
+		String address = "http://www.fmylife.com/random";
+		
+		try
+		{
+			Element element = Jsoup.connect(address).get().select("li[id]").first().select("p").first();
+			String fml = StringEscapeUtils.unescapeHtml4(element.html()) + ".";
+			return fml;
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 		return null;
 	}
 }
