@@ -33,9 +33,7 @@ public class CommandRegistry<T extends GenericCommand>
 		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
 		{
 			cmd = cls.getAnnotation(Command.class);
-			commands.add(
-					new CommandInfo<T>(cmd.name(), cmd.desc(), cmd.syntax(), cmd.adminOnly(), cls)
-					);
+			commands.add(new CommandInfo<T>(cmd.name(), cmd.desc(), cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(), cls));
 		}
 	}
 	
@@ -44,15 +42,20 @@ public class CommandRegistry<T extends GenericCommand>
 		String noPermissionError = "You don't have permission to use that command.";
 		String doesntExistError = "Command does not exist: " + event.getCommandName();
 		String commandError = "Error while executing command: " + event.getCommandName();
+		String needsArgsError = "Error: This command needs arguments. SYNTAX: ";
+
 		
 		if (!isCommand(event.getCommandName()))
 			return doesntExistError;
 		
 		Class<T> cls = getCommandClass(event.getCommandName());
 		CommandInfo<T> info = getCommandInfo(cls);
-
+		
 		if (info.isAdminOnly() && !event.getUser().isAdmin())
 			return noPermissionError;
+		
+		if (info.requiresArgs() && event.hasNoArgs())
+			return needsArgsError + info.getSyntax();
 		
 		try
 		{	
@@ -62,6 +65,7 @@ public class CommandRegistry<T extends GenericCommand>
 
 			constuct.newInstance(event).execute();
 		}
+		//TODO throw all exceptions during command execution to execute() to be caught here
 		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 		{
 			e.printStackTrace();
@@ -79,11 +83,11 @@ public class CommandRegistry<T extends GenericCommand>
 		return null;
 	}
 	
-	public CommandInfo<T> getCommandInfo(String name)
+	public String getCommandName(Class<T> cls)
 	{
 		for (CommandInfo<T> info : commands)
-			if (info.getName().equals(name))
-				return info;
+			if (info.getCommandClass().equals(cls))
+				return info.getName();
 		
 		return null;
 	}
@@ -97,20 +101,16 @@ public class CommandRegistry<T extends GenericCommand>
 		return null;
 	}
 	
+	public CommandInfo<T> getCommandInfo(String name)
+	{
+		return getCommandInfo(getCommandClass(name));
+	}
+	
 	public CommandInfo<T> getCommandInfo(CommandEvent<PircBotX> event)
 	{
 		return getCommandInfo(event.getCommandName());
 	}
-	
-	public String getCommandName(Class<T> cls)
-	{
-		for (CommandInfo<T> info : commands)
-			if (info.getCommandClass().equals(cls))
-				return info.getName();
-		
-		return null;
-	}
-	
+
 	public boolean isCommand(String name)
 	{
 		return getCommandClass(name) != null;

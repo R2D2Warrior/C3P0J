@@ -45,6 +45,32 @@ public class WebUtils
 		return null;
 	}
 	
+	public static Map<String, String> getLocationData(String ip)
+	{
+		String key = Utils.getConfigMap("config.json").get("apiKeys").get("geoip");
+		String address = String.format("http://api.ipinfodb.com/v3/ip-city/?key=%s&ip=%s&format=json", key, ip);
+		try
+		{
+			HttpURLConnection conn = (HttpURLConnection) new URL(address).openConnection();
+			Scanner in = new Scanner(conn.getInputStream());
+			
+			String json = "";
+			while (in.hasNext())
+				json += in.nextLine();
+			
+			JSONParser parser = new JSONParser();
+			@SuppressWarnings("unchecked")
+			Map<String, String> data = (Map<String, String>)parser.parse(json);
+			in.close();
+			return data;
+		}
+		catch (IOException | ParseException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static String getRandomFML()
 	{
 		String address = "http://www.fmylife.com/random";

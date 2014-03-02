@@ -4,7 +4,7 @@ import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="say", desc="Sends message to channel", syntax="say <stuff>", adminOnly=true)
+@Command(name="say", desc="Sends message to channel", syntax="say <stuff>", requiresArgs=true, adminOnly=true)
 public class Say extends GenericCommand
 {
 	
@@ -16,7 +16,6 @@ public class Say extends GenericCommand
 	@Override
 	public void execute()
 	{
-		String msg = (event.hasNoArgs()) ? "Enter a message." : event.getArguments();
-		event.respond(msg);
+		event.respond(event.getArguments());
 	}
 }

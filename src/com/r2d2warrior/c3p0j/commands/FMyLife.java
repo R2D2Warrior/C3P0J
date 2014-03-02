@@ -5,7 +5,7 @@ import org.pircbotx.PircBotX;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.WebUtils;
 
-@Command(name="fml", desc="Gets a random quote from FMyLife.com/random")
+@Command(name="fml", desc="Gets a random quote from http://www.fmylife.com/random")
 public class FMyLife extends GenericCommand
 {
 	public FMyLife(CommandEvent<PircBotX> event)

@@ -8,7 +8,7 @@ import bsh.Interpreter;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.Utils;
 
-@Command(name="eval", desc="Evaluate a method within PircBotX", syntax="eval <code>", adminOnly=true)
+@Command(name="eval", desc="Evaluate a method within PircBotX", syntax="eval <code>", requiresArgs=true, adminOnly=true)
 public class Eval extends GenericCommand
 {
 	
@@ -20,26 +20,19 @@ public class Eval extends GenericCommand
 	@Override
 	public void execute()
 	{
-		
-		if (event.hasNoArgs())
-		{
-			event.respondToUser("SYNTAX: " + info.getSyntax());
-			return;
-		}
-
 		String eval = event.getArguments();
 			
 		String result = "";
+		Interpreter i = Utils.createDefaultInterpreter(event);
+
 		try
-		{
-			Interpreter i = Utils.createDefaultInterpreter(event);
-			
+		{	
 			i.eval("item = " + eval);
 			result = i.get("item").toString();
 		}
 		catch (EvalError e)
 		{
-			event.respondToUser("Error occurred while evaluating: \"" + eval + "\"");
+			event.respondToUser("Error occurred during evaluation.");
 			e.printStackTrace();
 		}
 		

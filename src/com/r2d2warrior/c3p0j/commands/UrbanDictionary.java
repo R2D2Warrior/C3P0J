@@ -10,7 +10,7 @@ import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.Utils;
 import com.r2d2warrior.c3p0j.utils.WebUtils;
 
-@Command(name="ud", desc="Searches UrbanDictionary for a term", syntax="ud <term> [definition number]")
+@Command(name="ud", desc="Searches UrbanDictionary for a term", syntax="ud <term> [definition number]", requiresArgs = true)
 public class UrbanDictionary extends GenericCommand
 {
 	public UrbanDictionary(CommandEvent<PircBotX> event)
@@ -20,12 +20,6 @@ public class UrbanDictionary extends GenericCommand
 	
 	public void execute()
 	{
-		if (event.hasNoArgs())
-		{
-			event.respondToUser("SYNTAX: " + info.getSyntax());
-			return;
-		}
-		
 		List<String> args = event.getArgumentsList();
 		int defNum = 1;
 		String searchTerm = "";
@@ -54,6 +48,6 @@ public class UrbanDictionary extends GenericCommand
 		}
 		String def = defs.get(defNum-1).get("definition");
 		String url = defs.get(defNum-1).get("permalink");
-		event.respond(Utils.firstCap(searchTerm) + ": [" + defNum + "/" + defs.size() + "] " + def + " [" + url + "]");
+		event.respond(Utils.toSentenceCase(searchTerm) + ": [" + defNum + "/" + defs.size() + "] " + def + " [" + url + "]");
 	}
 }

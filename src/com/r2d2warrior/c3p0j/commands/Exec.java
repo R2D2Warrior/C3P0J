@@ -8,7 +8,7 @@ import bsh.Interpreter;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.Utils;
 
-@Command(name="exec", desc="Execute a method within PircBotX", syntax="exec <code>", adminOnly=true)
+@Command(name="exec", desc="Execute a method within PircBotX", syntax="exec <code>", requiresArgs=true, adminOnly=true)
 public class Exec extends GenericCommand
 {
 	
@@ -18,14 +18,7 @@ public class Exec extends GenericCommand
 	}
 	
 	public void execute()
-	{
-		
-		if (event.hasNoArgs())
-		{
-			event.respondToUser("SYNTAX: " + info.getSyntax());
-			return;
-		}
-		
+	{	
 		String exec = event.getArguments();
 
 		try

@@ -1,6 +1,14 @@
 package com.r2d2warrior.c3p0j.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
+import org.apache.commons.lang3.text.WordUtils;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.types.GenericChannelEvent;
@@ -11,29 +19,59 @@ import bsh.Interpreter;
 
 public class Utils
 {
+	public static Map<String, Map<String, String>> getConfigMap(String fileName)
+	{
+		try
+		{
+			Scanner scan = new Scanner(new File(fileName));
+			String json = "";
+			while (scan.hasNext())
+				json += scan.nextLine();
+			
+			JSONParser parser = new JSONParser();
+			@SuppressWarnings("unchecked")
+			Map<String, Map<String, String>> config = (Map<String, Map<String, String>>)parser.parse(json);
+			
+			scan.close();
+			return config;
+		}
+		catch (FileNotFoundException | ParseException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	@SuppressWarnings("unchecked")
-	public static Interpreter createDefaultInterpreter(Event<PircBotX> event) throws EvalError
+	public static Interpreter createDefaultInterpreter(Event<PircBotX> event)
 	{
 		Interpreter i = new Interpreter();
 		PircBotX bot = event.getBot();
 		
-		i.set("bot", bot);
-		i.set("event", event);
-		
-		if (event instanceof GenericUserEvent)
-			i.set("user", ((GenericUserEvent<PircBotX>)event).getUser());
-		
-		if (event instanceof GenericChannelEvent)
-			i.set("channel", ((GenericChannelEvent<PircBotX>)event).getChannel());
-		
-		i.set("config", bot.getConfiguration());
-		i.set("dao",  bot.getUserChannelDao());
-		i.set("admins", bot.getConfiguration().getAdminAccounts().toString());
-		i.set("cmdReg", bot.getCommandRegistry());
-		
-		i.eval("import com.r2d2warrior.c3p0j.Utils");
-		i.eval("import org.apache.commons.lang3.StringUtils");
-		
+		try
+		{
+			i.set("bot", bot);
+			i.set("event", event);
+			
+			if (event instanceof GenericUserEvent)
+				i.set("user", ((GenericUserEvent<PircBotX>)event).getUser());
+			
+			if (event instanceof GenericChannelEvent)
+				i.set("channel", ((GenericChannelEvent<PircBotX>)event).getChannel());
+			
+			i.set("config", bot.getConfiguration());
+			i.set("dao",  bot.getUserChannelDao());
+			i.set("admins", bot.getConfiguration().getAdminAccounts());
+			i.set("cmdReg", bot.getCommandRegistry());
+			
+			i.eval("import com.r2d2warrior.c3p0j.utils.WebUtils");
+			i.eval("import org.pircbotx.*");
+		}
+		catch (EvalError e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 		return i;
 	}
 	
@@ -58,8 +96,13 @@ public class Utils
 		return ret;
 	}
 	
-	public static String firstCap(String s)
+	public static String toSentenceCase(String s)
 	{
-		return s.substring(0, 1).toUpperCase() + s.substring(1);
+		return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+	}
+	
+	public static String toTitleCase(String s)
+	{
+		return WordUtils.capitalizeFully(s, ' ', '\t', '\n');
 	}
 }

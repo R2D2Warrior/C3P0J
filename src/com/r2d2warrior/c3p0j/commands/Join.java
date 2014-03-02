@@ -4,7 +4,7 @@ import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="join", desc="Joins specified channel", syntax="join <#channel>", adminOnly=true)
+@Command(name="join", desc="Joins specified channel", syntax="join <#channel>", requiresArgs=true, adminOnly=true)
 public class Join extends GenericCommand
 {
 	
@@ -15,9 +15,6 @@ public class Join extends GenericCommand
 	
 	public void execute()
 	{
-		if (event.hasNoArgs())
-			return;
-		
 		String chan = event.getArgumentsList().get(0);
 		
 		if (!userChannelDao.channelExists(chan) && event.hasChannelArg())
