@@ -3,21 +3,22 @@ package com.r2d2warrior.c3p0j;
 import org.pircbotx.PircBotX;
 import org.pircbotx.Configuration;
 import org.pircbotx.cap.EnableCapHandler;
+import org.pircbotx.hooks.Listener;
+import org.reflections.Reflections;
 
-import com.r2d2warrior.c3p0j.listeners.CommandListener;
-import com.r2d2warrior.c3p0j.listeners.InviteJoin;
-import com.r2d2warrior.c3p0j.utils.Utils;
+import com.r2d2warrior.c3p0j.listeners.AddListener;
+import com.r2d2warrior.c3p0j.utils.Config;
 
 public class C3P0J
 {
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
+		// TODO Improve config file
+		Config c = new Config("config.json");
+		String password = c.getPassword("nickserv");
 		
-		// TODO improve config file
-		String password = Utils.getConfigMap("config.json").get("passwords").get("nickserv");
-		
- 		Configuration<PircBotX> config = new Configuration.Builder<PircBotX>()
+ 		Configuration.Builder<PircBotX> builder = new Configuration.Builder<PircBotX>()
  				
  				//Login info
 			.setName("C3P0J")
@@ -31,14 +32,12 @@ public class C3P0J
 			.addCapHandler(new EnableCapHandler("extended-join", true))
 			.addCapHandler(new EnableCapHandler("account-notify", true))
 			
-				//Listeners
-			.addListener(new CommandListener())
-			.addListener(new InviteJoin())
-			
+
 				//Command management
-			.addAdminAccounts("R2D2Warrior", "CHCMATT", "Vgr255")
+			.addAdminAccounts("R2D2Warrior", "CHCMATT", "Vgr255", "ChasedSpade")
 			.addPrefix(".", "MESSAGE")
 			.addPrefix("@", "NOTICE")
+			.setFactoidPrefix("?")
 			
 				//Server info
 			.setServerHostname("irc.esper.net")
@@ -48,11 +47,26 @@ public class C3P0J
 			
 			.addBlockedChannels("#help", "#lobby")
 			
-			.setNickservPassword(password)
+			.setNickservPassword(password);
 			
-			.buildConfiguration();
- 		
-        PircBotX bot = new PircBotX(config);
+
+ 		try
+ 		{
+			Reflections reflections = new Reflections("com.r2d2warrior.c3p0j.listeners");
+			for (Class<?> cls : reflections.getTypesAnnotatedWith(AddListener.class))
+			{
+				@SuppressWarnings("unchecked")
+				Listener<PircBotX> listener = (Listener<PircBotX>) cls.newInstance();
+				builder.addListener(listener);
+			}
+ 		}
+ 		catch (IllegalAccessException | InstantiationException e)
+ 		{
+ 			e.printStackTrace();
+ 		}
+
+
+        PircBotX bot = new PircBotX(builder.buildConfiguration());
                 
         try
         {

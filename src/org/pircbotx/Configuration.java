@@ -123,6 +123,7 @@ public class Configuration<B extends PircBotX> {
 	protected final List<String> adminAccounts;
 	protected final BiMap<String, String> prefixes;
 	protected final List<String> blockedChannels;
+	protected final String factoidPrefix;
 
 	/**
 	 * Use {@link Configuration.Builder#build() }.
@@ -199,6 +200,7 @@ public class Configuration<B extends PircBotX> {
 		this.adminAccounts  = builder.getAdminAccounts();
 		this.prefixes = HashBiMap.create(builder.getPrefixes());
 		this.blockedChannels = builder.getBlockedChannels();
+		this.factoidPrefix = builder.getFactoidPrefix();
 	}
 
 	@Accessors(chain = true)
@@ -374,6 +376,8 @@ public class Configuration<B extends PircBotX> {
 		 */
 		protected final List<CapHandler> capHandlers = new ArrayList<CapHandler>();
 		protected final List<ChannelModeHandler> channelModeHandlers = new ArrayList<ChannelModeHandler>();
+		
+		// New Things Added by R2D2Warrior
 		/**
 		 * List of the account names of bot admins
 		 */
@@ -386,6 +390,10 @@ public class Configuration<B extends PircBotX> {
 		 * List of channels not to join or send messages to
 		 */
 		protected List<String> blockedChannels = new ArrayList<>();
+		/**
+		 * The prefix used to call factoids
+		 */
+		protected String factoidPrefix;
 		/**
 		 * The {@link BotFactory} to use
 		 */
@@ -448,6 +456,7 @@ public class Configuration<B extends PircBotX> {
 			this.adminAccounts = configuration.getAdminAccounts();
 			this.prefixes = configuration.getPrefixes();
 			this.blockedChannels = configuration.getBlockedChannels();
+			this.factoidPrefix = configuration.getFactoidPrefix();
 		}
 		/**
 		 * Copy values from another builder. 
@@ -498,6 +507,7 @@ public class Configuration<B extends PircBotX> {
 			this.adminAccounts = otherBuilder.getAdminAccounts();
 			this.prefixes = otherBuilder.getPrefixes();
 			this.blockedChannels = otherBuilder.getBlockedChannels();
+			this.factoidPrefix = otherBuilder.getFactoidPrefix();
 		}
 
 		/**
@@ -563,6 +573,11 @@ public class Configuration<B extends PircBotX> {
 		}
 		
 		//ADDED BY R2D2WARRIOR
+		/**
+		 * Utility method for <code>{@link #getAdminAccounts().add(account)</code>
+		 * @param account
+		 * @return 
+		 */
 		public Builder<B> addAdminAccount(String account)
 		{
 			getAdminAccounts().add(account);
@@ -575,12 +590,23 @@ public class Configuration<B extends PircBotX> {
 			return this;
 		}
 		
+		/**
+		 * Utility method for <code>{@link #getPrefixes().put(pre, command)</code>
+		 * @param pre
+		 * @param command
+		 * @return 
+		 */
 		public Builder<B> addPrefix(String pre, String command)
 		{
 			getPrefixes().put(pre, command);
 			return this;
 		}
 		
+		/**
+		 * Utility method for <code>{@link #getBlockedChannels().put(channel)</code>
+		 * @param channel
+		 * @return 
+		 */
 		public Builder<B> addBlockedChannel(String channel)
 		{
 			getBlockedChannels().add(channel);

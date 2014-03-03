@@ -47,7 +47,7 @@ public class WebUtils
 	
 	public static Map<String, String> getLocationData(String ip)
 	{
-		String key = Utils.getConfigMap("config.json").get("apiKeys").get("geoip");
+		String key = new Config("config.json").getAPIKey("geoip");
 		String address = String.format("http://api.ipinfodb.com/v3/ip-city/?key=%s&ip=%s&format=json", key, ip);
 		try
 		{

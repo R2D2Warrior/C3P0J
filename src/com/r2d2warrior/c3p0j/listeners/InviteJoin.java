@@ -4,6 +4,7 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.InviteEvent;
 
+@AddListener
 public class InviteJoin extends ListenerAdapter<PircBotX>
 {
 	public void onInvite(InviteEvent<PircBotX> event)

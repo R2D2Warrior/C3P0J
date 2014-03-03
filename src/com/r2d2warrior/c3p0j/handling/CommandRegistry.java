@@ -23,12 +23,8 @@ public class CommandRegistry<T extends GenericCommand>
 	{
 		this.bot = bot;
 		this.commands = new HashSet<CommandInfo<T>>();
-		parseAnnotations();
-	}
-	
-	public void parseAnnotations()
-	{
-		Reflections reflections = new Reflections("com.r2d2warrior.c3p0j");
+		
+		Reflections reflections = new Reflections("com.r2d2warrior.c3p0j.commands");
 		Command cmd;
 		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
 		{
@@ -40,13 +36,12 @@ public class CommandRegistry<T extends GenericCommand>
 	public String executeCommand(CommandEvent<PircBotX> event)
 	{
 		String noPermissionError = "You don't have permission to use that command.";
-		String doesntExistError = "Command does not exist: " + event.getCommandName();
+		//String doesntExistError = "Command does not exist: " + event.getCommandName();
 		String commandError = "Error while executing command: " + event.getCommandName();
 		String needsArgsError = "Error: This command needs arguments. SYNTAX: ";
-
 		
 		if (!isCommand(event.getCommandName()))
-			return doesntExistError;
+			return "";
 		
 		Class<T> cls = getCommandClass(event.getCommandName());
 		CommandInfo<T> info = getCommandInfo(cls);
@@ -65,7 +60,7 @@ public class CommandRegistry<T extends GenericCommand>
 
 			constuct.newInstance(event).execute();
 		}
-		//TODO throw all exceptions during command execution to execute() to be caught here
+		//TODO Throw all exceptions during command execution to execute() to be caught here
 		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 		{
 			e.printStackTrace();

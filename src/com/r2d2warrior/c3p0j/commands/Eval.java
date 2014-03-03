@@ -36,7 +36,7 @@ public class Eval extends GenericCommand
 			e.printStackTrace();
 		}
 		
-		// TODO cut off anything that overflows maximum line length (for Exec.java too)
+		// TODO Cut off anything that overflows maximum line length
 		event.respond(result);
 	}
 }

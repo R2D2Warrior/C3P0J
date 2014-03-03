@@ -19,23 +19,16 @@ import org.pircbotx.hooks.types.GenericMessageEvent;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
 import com.r2d2warrior.c3p0j.utils.Utils;
 
+@Getter
 public class CommandEvent<T extends PircBotX> extends Event<T> implements GenericMessageEvent<T>, GenericChannelUserEvent<T>
 {
-	@Getter(onMethod = @_(@Override))
 	protected Channel channel;
-	@Getter(onMethod = @_(@Override))
 	protected User user;
-	@Getter(onMethod = @_(@Override))
 	protected String message;
-	@Getter
 	protected String prefix;
-	@Getter
 	protected String commandName;
-	@Getter
 	protected String arguments;
-	@Getter
 	protected List<String> argumentsList;
-	@Getter
 	protected CommandInfo<GenericCommand> commandInfo;
 	
 	public CommandEvent(T bot, @Nullable Channel channel, @NonNull User user, @NonNull String message)

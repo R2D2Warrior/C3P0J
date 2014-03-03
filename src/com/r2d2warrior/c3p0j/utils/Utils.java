@@ -1,14 +1,7 @@
 package com.r2d2warrior.c3p0j.utils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-
 import org.apache.commons.lang3.text.WordUtils;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.types.GenericChannelEvent;
@@ -19,28 +12,6 @@ import bsh.Interpreter;
 
 public class Utils
 {
-	public static Map<String, Map<String, String>> getConfigMap(String fileName)
-	{
-		try
-		{
-			Scanner scan = new Scanner(new File(fileName));
-			String json = "";
-			while (scan.hasNext())
-				json += scan.nextLine();
-			
-			JSONParser parser = new JSONParser();
-			@SuppressWarnings("unchecked")
-			Map<String, Map<String, String>> config = (Map<String, Map<String, String>>)parser.parse(json);
-			
-			scan.close();
-			return config;
-		}
-		catch (FileNotFoundException | ParseException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
-	}
 	
 	@SuppressWarnings("unchecked")
 	public static Interpreter createDefaultInterpreter(Event<PircBotX> event)

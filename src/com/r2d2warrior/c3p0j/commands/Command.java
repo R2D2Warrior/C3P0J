@@ -9,10 +9,10 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command
 {
-	String name();
+	String name(); // TODO Command aliases
 	String desc() default "";
 	/** Required: {@code<arg>}, Optional: [arg]*/
 	String syntax() default "";
+	boolean requiresArgs() default false; // TODO requiredArgCount instead of true/false
 	boolean adminOnly() default false;
-	boolean requiresArgs() default false; 
 }

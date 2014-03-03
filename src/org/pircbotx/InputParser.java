@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.PeekingIterator;
-import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -492,34 +491,25 @@ public class InputParser implements Closeable {
 		} else if (command.equals("PRIVMSG") && channel != null) {
 			// This is a normal message to a channel.
 			configuration.getListenerManager().dispatchEvent(new MessageEvent<PircBotX>(bot, channel, source, message));
-			if (configuration.getPrefixes().containsKey(message.substring(0, 1)))
-			{
-				// Messages starts with a valid prefix -- call command event
-				configuration.getListenerManager().dispatchEvent(new CommandEvent<PircBotX>(bot, channel, source, message));
-			}
+
 		} else if (command.equals("PRIVMSG")) {
 			// This is a private message to us.
 			//Add to private message
 			bot.getUserChannelDao().addUserToPrivate(source);
 			configuration.getListenerManager().dispatchEvent(new PrivateMessageEvent<PircBotX>(bot, source, message));
-			if (bot.getCommandRegistry().isCommand(message.split(" ")[0]))
-			{
-				// First word of the private message is a command -- call command event with null channel
-				configuration.getListenerManager().dispatchEvent(new CommandEvent<PircBotX>(bot, null, source, message));
-			}
 		} else if (command.equals("JOIN")) {
 			// Someone is joining a channel.
 			if (sourceNick.equalsIgnoreCase(bot.getNick())) {
 				//Its us, get channel info
 				bot.sendRaw().rawLine("WHO " + target);
-				bot.sendRaw().rawLine("WHO " + target + " %nat,ACC");
+				bot.sendRaw().rawLine("WHO " + target + " %nat,ACC"); // ADDED BY R2D2WARRIOR
 				bot.sendRaw().rawLine("MODE " + target);
 			}
 			source.setLogin(sourceLogin);
 			source.setHostmask(sourceHostname);
 			
-			String account = (parsedLine.get(1).equals("*")) ? "0" : parsedLine.get(1);
-			source.setAccount(account);
+			String account = (parsedLine.get(1).equals("*")) ? "0" : parsedLine.get(1); // ADDED BY R2D2WARRIOR
+			source.setAccount(account); // ADDED BY R2D2WARRIOR
 			
 			bot.getUserChannelDao().addUserToChannel(source, channel);
 			configuration.getListenerManager().dispatchEvent(new JoinEvent<PircBotX>(bot, channel, source));
@@ -591,7 +581,7 @@ public class InputParser implements Closeable {
 		} else if (command.equals("AWAY"))
 			//IRCv3 AWAY notify
 			source.setAwayMessage(parsedLine.get(0));
-		else if (command.equals("ACCOUNT")) {
+		else if (command.equals("ACCOUNT")) { // ADDED BY R2D2WARRIOR
 			String account = (parsedLine.get(0).equals("*")) ? "0" : parsedLine.get(0);
 			source.setAccount(account);
 		}
@@ -673,7 +663,7 @@ public class InputParser implements Closeable {
 
 			//Associate with channel
 			bot.getUserChannelDao().addUserToChannel(curUser, channel);
-		} else if (code == 354) {
+		} else if (code == 354) { // ADDED BY R2D2WARRIOR
 			//WHOX response for custom calls to /who
 			if (parsedResponse.get(1).equals("ACC")) {
 				//This will only be called by code asking for nick and account
