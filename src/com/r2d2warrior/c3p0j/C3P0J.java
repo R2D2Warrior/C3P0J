@@ -29,6 +29,7 @@ public class C3P0J
 			.setAutoNickChange(true)
 			.setCapEnabled(true)
 			
+				// TODO CHCMATT BNC Eating capabilities, find a work-around
 			.addCapHandler(new EnableCapHandler("extended-join", true))
 			.addCapHandler(new EnableCapHandler("account-notify", true))
 			

@@ -17,7 +17,6 @@ public class Exec extends GenericCommand
 		super(event);
 	}
 	
-	// TODO Cut off anything that overflows maximum line length
 	public void execute()
 	{	
 		String exec = event.getArguments();

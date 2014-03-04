@@ -18,6 +18,8 @@ public class GeoIP extends GenericCommand
 	
 	public void execute()
 	{	
+		
+		// TODO Change to use Liam's ip lookup
 		String arg = event.getArgumentsList().get(0);
 		Map<String, String> results;
 		
