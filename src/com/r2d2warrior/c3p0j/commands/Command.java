@@ -13,6 +13,6 @@ public @interface Command
 	String desc() default "";
 	/** Required: {@code<arg>}, Optional: [arg]*/
 	String syntax() default "";
-	boolean requiresArgs() default false; // TODO requiredArgCount instead of true/false
+	boolean requiresArgs() default false;
 	boolean adminOnly() default false;
 }

@@ -1,13 +1,17 @@
 package com.r2d2warrior.c3p0j.utils;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
@@ -45,30 +49,24 @@ public class WebUtils
 		return null;
 	}
 	
-	public static Map<String, String> getLocationData(String ip)
+	public static Map<String, String> getLocationData(String ip) throws IOException, ParseException
 	{
-		String key = new Config("config.json").getAPIKey("geoip");
-		String address = String.format("http://api.ipinfodb.com/v3/ip-city/?key=%s&ip=%s&format=json", key, ip);
-		try
+		String address = "http://geo.liamstanley.io/json/" + ip;
+		HttpURLConnection conn = (HttpURLConnection) new URL(address).openConnection();
+		JSONObject data =
+				(JSONObject)new JSONParser().parse(new InputStreamReader(conn.getInputStream()));
+		
+		Map<String, String> results = new HashMap<>();
+		for (Object o : data.keySet())
 		{
-			HttpURLConnection conn = (HttpURLConnection) new URL(address).openConnection();
-			Scanner in = new Scanner(conn.getInputStream());
-			
-			String json = "";
-			while (in.hasNext())
-				json += in.nextLine();
-			
-			JSONParser parser = new JSONParser();
-			@SuppressWarnings("unchecked")
-			Map<String, String> data = (Map<String, String>)parser.parse(json);
-			in.close();
-			return data;
+			String key = o.toString();
+			String val = data.get(key).toString();
+			if (val.equals("0") || StringUtils.isBlank(val))
+				results.put(key, "N/A");
+			else
+				results.put(key, Utils.toTitleCase(val));
 		}
-		catch (IOException | ParseException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
+		return results;
 	}
 	
 	public static String getRandomFML()

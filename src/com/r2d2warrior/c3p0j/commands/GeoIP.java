@@ -1,11 +1,13 @@
 package com.r2d2warrior.c3p0j.commands;
 
+import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.parser.ParseException;
 import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
-import com.r2d2warrior.c3p0j.utils.Utils;
 import com.r2d2warrior.c3p0j.utils.WebUtils;
 
 @Command(name="geoip", desc="Get location information from an IP address", syntax="geoip <ip>", requiresArgs=true)
@@ -19,27 +21,31 @@ public class GeoIP extends GenericCommand
 	public void execute()
 	{	
 		
-		// TODO Change to use Liam's ip lookup
 		String arg = event.getArgumentsList().get(0);
-		Map<String, String> results;
+		String ip = (arg.contains(".") || StringUtils.isNumeric(arg)) ? arg : userChannelDao.getUser(arg).getHostmask();
 		
-		if (arg.contains("."))
-			results = WebUtils.getLocationData(arg);
-		else
-			results = WebUtils.getLocationData(userChannelDao.getUser(arg).getHostmask());
-		
-		String response;
-		if (results.get("statusCode").equals("OK"))
+		try
 		{
-			response = String.format("Location of %s: %s, %s (%s)",
-					results.get("ipAddress"), Utils.toTitleCase(results.get("cityName")), 
-					Utils.toTitleCase(results.get("regionName")), results.get("countryCode"));
+			Map<String, String> results = WebUtils.getLocationData(ip);
+			if (results.get("country_name").equals("Reserved"))
+				event.respondToUser("Error: That IP is Reserved");
+			else
+			{
+				event.respond(String.format("Location of %s: [City, State, Country]: %s, %s (%s) [Lat/Long]: %s/%s",
+						results.get("ip"), results.get("city"), 
+						results.get("region_name"), results.get("country_code"),
+						results.get("latitude"), results.get("longitude")));
+			}
 		}
-		else
+		catch (IOException e)
 		{
-			response = "Error: " + results.get("statusMessage");
+			event.respondToUser("Error while connecting to URL.");
+			e.printStackTrace();
 		}
-		
-		event.respond(response);
+		catch (ParseException e)
+		{
+			event.respondToUser("Error while parsing results.");
+			e.printStackTrace();
+		}
 	}
 }

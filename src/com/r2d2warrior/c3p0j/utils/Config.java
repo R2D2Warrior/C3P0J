@@ -28,11 +28,6 @@ public class Config
 		return map.get("passwords").get(type.toLowerCase());
 	}
 	
-	public String getAPIKey(String type)
-	{
-		return map.get("apiKeys").get(type.toLowerCase());
-	}
-	
 	public String getFactoidData(String name)
 	{
 		return map.get("factoids").get(name.toLowerCase());
