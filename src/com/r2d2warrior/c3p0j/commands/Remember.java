@@ -19,7 +19,7 @@ public class Remember extends GenericCommand
 		String factoid = event.getArgumentsList().get(0);
 		String data = event.getArgRange(1);
 		
-		if (!FactoidManager.factoidExists(factoid) && !StringUtils.isNotBlank(data))
+		if (!FactoidManager.factoidExists(factoid) && StringUtils.isNotBlank(data))
 		{	
 			FactoidManager.addFactoid(factoid, data);
 			event.respond("Saved factoid: " + factoid);

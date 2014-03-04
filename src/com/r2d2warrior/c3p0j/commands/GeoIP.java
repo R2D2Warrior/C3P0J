@@ -18,7 +18,14 @@ public class GeoIP extends GenericCommand
 	
 	public void execute()
 	{	
-		Map<String, String> results = WebUtils.getLocationData(event.getArgumentsList().get(0));
+		String arg = event.getArgumentsList().get(0);
+		Map<String, String> results;
+		
+		if (arg.contains("."))
+			results = WebUtils.getLocationData(arg);
+		else
+			results = WebUtils.getLocationData(userChannelDao.getUser(arg).getHostmask());
+		
 		String response;
 		if (results.get("statusCode").equals("OK"))
 		{
