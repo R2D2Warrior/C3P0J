@@ -23,7 +23,11 @@ public class CommandRegistry<T extends GenericCommand>
 	{
 		this.bot = bot;
 		this.commands = new HashSet<CommandInfo<T>>();
-		
+		parseAnnotations();
+	}
+	
+	private void parseAnnotations()
+	{
 		Reflections reflections = new Reflections("com.r2d2warrior.c3p0j.commands");
 		Command cmd;
 		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
@@ -31,6 +35,13 @@ public class CommandRegistry<T extends GenericCommand>
 			cmd = cls.getAnnotation(Command.class);
 			commands.add(new CommandInfo<T>(cmd.name(), cmd.desc(), cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(), cls));
 		}
+	}
+	
+	//TODO Figure out how to refresh command changes. This method only works for adding/removing them
+	public void refresh()
+	{
+		commands = new HashSet<>();
+		parseAnnotations();
 	}
 	
 	public String executeCommand(CommandEvent<PircBotX> event)

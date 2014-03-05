@@ -32,6 +32,7 @@ public class Utils
 			
 			i.set("config", bot.getConfiguration());
 			i.set("dao",  bot.getUserChannelDao());
+			i.set("userChannelDao", bot.getUserChannelDao());
 			i.set("admins", bot.getConfiguration().getAdminAccounts());
 			i.set("cmdReg", bot.getCommandRegistry());
 			

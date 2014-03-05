@@ -44,7 +44,7 @@ public class C3P0J
 			.setServerHostname("irc.esper.net")
 			.setChannelPrefixes("#")
 			
-			.addAutoJoinChannel("#C3P0")
+			.addAutoJoinChannels("#C3P0", "#Katelyn")
 			
 			.addBlockedChannels("#help", "#lobby")
 			

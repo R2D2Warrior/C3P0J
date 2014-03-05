@@ -573,6 +573,12 @@ public class Configuration<B extends PircBotX> {
 		}
 		
 		//ADDED BY R2D2WARRIOR
+		public Builder<B> addAutoJoinChannels(String... channels)
+		{
+			for (String c : channels)
+				addAutoJoinChannel(c);
+			return this;
+		}
 		/**
 		 * Utility method for <code>{@link #getAdminAccounts().add(account)</code>
 		 * @param account
