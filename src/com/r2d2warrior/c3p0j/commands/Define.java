@@ -19,7 +19,7 @@ public class Define extends GenericCommand
 	
 	public void execute()
 	{
-		List<String> args = event.getArgumentsList();
+		List<String> args = event.getArgumentList();
 		String lastArg = args.get(args.size()-1);
 		
 		int defNum = 1;

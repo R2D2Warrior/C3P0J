@@ -16,7 +16,7 @@ public class Remember extends GenericCommand
 	
 	public void execute()
 	{
-		String factoid = event.getArgumentsList().get(0);
+		String factoid = event.getArgumentList().get(0);
 		String data = event.getArgRange(1);
 		
 		if (!FactoidManager.factoidExists(factoid) && StringUtils.isNotBlank(data))
@@ -41,7 +41,7 @@ class Forget extends GenericCommand
 	
 	public void execute()
 	{
-		String factoid = event.getArgumentsList().get(0);
+		String factoid = event.getArgumentList().get(0);
 		
 		if (FactoidManager.factoidExists(factoid))
 		{

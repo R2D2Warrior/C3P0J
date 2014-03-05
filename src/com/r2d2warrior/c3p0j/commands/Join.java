@@ -15,7 +15,7 @@ public class Join extends GenericCommand
 	
 	public void execute()
 	{
-		String chan = event.getArgumentsList().get(0);
+		String chan = event.getArgumentList().get(0);
 		
 		if (!userChannelDao.channelExists(chan) && event.hasChannelArg())
 		{

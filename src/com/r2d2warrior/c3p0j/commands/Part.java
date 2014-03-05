@@ -15,7 +15,7 @@ public class Part extends GenericCommand
 	
 	public void execute()
 	{
-		String chan = (event.hasChannelArg()) ? event.getArgumentsList().get(0) : channel.getName();
+		String chan = (event.hasChannelArg()) ? event.getArgumentList().get(0) : channel.getName();
 		String defaultMsg = "Parted by " + user.getNick();
 		String msg = "";
 		
@@ -27,7 +27,7 @@ public class Part extends GenericCommand
 		{
 			if (event.hasChannelArg())
 			{
-				msg = (event.getArgumentsList().size() > 1) ? event.getArgRange(1) : defaultMsg;
+				msg = (event.getArgumentList().size() > 1) ? event.getArgRange(1) : defaultMsg;
 			}
 			else
 				msg = event.getArguments();

@@ -1,5 +1,6 @@
 package com.r2d2warrior.c3p0j.handling;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -28,7 +29,6 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 	protected String prefix;
 	protected String commandName;
 	protected String arguments;
-	protected List<String> argumentsList;
 	protected CommandInfo<GenericCommand> commandInfo;
 	
 	public CommandEvent(T bot, @Nullable Channel channel, @NonNull User user, @NonNull String message)
@@ -40,7 +40,6 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 		
 		List<String> msg = new StrTokenizer(message).getTokenList();
 		this.arguments = (msg.size() > 1) ? StringUtils.split(message, " ", 2)[1] : "";
-		this.argumentsList = new StrTokenizer(arguments).getTokenList();
 		
 		if (channel != null)
 		{
@@ -77,6 +76,43 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 		getUser().send().notice(response);
 	}
 	
+	//TODO WIP: compelteNick(String oldNick)
+	public String completeNick(String oldNick)
+	{
+		List<User> usersInChannel = bot.getUserChannelDao().getUsers(channel).asList();
+		List<String> matchUsers = new ArrayList<>();
+		for (User u : usersInChannel)
+		{
+			if (u.getNick().toLowerCase().startsWith(oldNick.toLowerCase()))
+				matchUsers.add(u.getNick());
+		}
+		
+		if (matchUsers.size() > 1 && matchUsers.size() <= 5)
+		{
+			respondToUser("Did you mean " + Utils.commaWithOr(matchUsers));
+			return oldNick;
+		}
+		else if (matchUsers.size() > 5)
+		{
+			respondToUser("More than 5 matches for \"" + oldNick + ",\" be more specific.");
+			return oldNick;
+		}
+		else// if (matchUsers.size() == 1)
+		{
+			return matchUsers.get(0);
+		}
+	}
+	
+	public String completeNick(int argIndex)
+	{
+		return completeNick(getArgumentList().get(argIndex));
+	}
+	
+	public List<String> getArgumentList()
+	{
+		return new StrTokenizer(arguments).getTokenList();
+	}
+	
 	public boolean hasNoArgs()
 	{
 		return StringUtils.isBlank(arguments);
@@ -84,16 +120,16 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 	
 	public boolean hasChannelArg()
 	{
-		return !hasNoArgs() && getBot().getConfiguration().getChannelPrefixes().contains(argumentsList.get(0).substring(0, 1));
+		return !hasNoArgs() && getBot().getConfiguration().getChannelPrefixes().contains(getArgumentList().get(0).substring(0, 1));
 	}
 	
 	public String getArgRange(int start)
 	{
-		return Utils.getRange(argumentsList, start);
+		return Utils.getRange(getArgumentList(), start);
 	}
 	
 	public String getArgRange(int start, int end)
 	{
-		return Utils.getRange(argumentsList, start, end);
+		return Utils.getRange(getArgumentList(), start, end);
 	}
 }

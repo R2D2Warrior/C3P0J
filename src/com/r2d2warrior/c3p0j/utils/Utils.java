@@ -1,6 +1,9 @@
 package com.r2d2warrior.c3p0j.utils;
 
+import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
@@ -10,7 +13,6 @@ import org.pircbotx.hooks.types.GenericUserEvent;
 import bsh.EvalError;
 import bsh.Interpreter;
 
-// TODO Nick compeletion?
 public class Utils
 {
 	
@@ -37,6 +39,7 @@ public class Utils
 			i.set("admins", bot.getConfiguration().getAdminAccounts());
 			i.set("cmdReg", bot.getCommandRegistry());
 			
+			i.eval("import com.r2d2warrior.c3p0j.utils.Utils");
 			i.eval("import com.r2d2warrior.c3p0j.utils.WebUtils");
 			i.eval("import org.pircbotx.*");
 		}
@@ -77,5 +80,22 @@ public class Utils
 	public static String toTitleCase(String s)
 	{
 		return WordUtils.capitalizeFully(s, ' ', '\t', '\n');
+	}
+	
+	public static String commaWithOr(List<String> list)
+	{
+		if (list.size() == 1)
+			return list.get(0);
+		else if (list.size() == 2)
+			return list.get(0) + " or " + list.get(1);
+		else
+		{
+			return StringUtils.join(getRange(list, 0, list.size()-2), ", ") + " or " + list.get(list.size()-1);
+		}
+	}
+	
+	public static String commaWithOr(String... list)
+	{
+		return commaWithOr(Arrays.asList(list));
 	}
 }

@@ -1,6 +1,5 @@
 package com.r2d2warrior.c3p0j.commands;
 
-import org.pircbotx.Colors;
 import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
@@ -15,6 +14,14 @@ public class Ping extends GenericCommand
 	
 	public void execute()
 	{
-		event.respond(user.getNick() + Colors.setColor(" PONG PONG", Colors.RED + Colors.BOLD));
+		if (event.hasNoArgs())
+		{
+			event.respond(user.getNick() + " PONG!");
+		}
+		else
+		{
+			String nick = event.completeNick(0);
+			event.respond(nick + ": PONG!");
+		}
 	}
 }

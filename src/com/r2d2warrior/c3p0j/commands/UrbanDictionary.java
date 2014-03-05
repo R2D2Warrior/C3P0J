@@ -20,7 +20,7 @@ public class UrbanDictionary extends GenericCommand
 	
 	public void execute()
 	{
-		List<String> args = event.getArgumentsList();
+		List<String> args = event.getArgumentList();
 		int defNum = 1;
 		String searchTerm = "";
 		

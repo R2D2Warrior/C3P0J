@@ -15,7 +15,7 @@ public class Cycle extends GenericCommand
 	
 	public void execute()
 	{
-		String chan = (event.hasChannelArg()) ? event.getArgumentsList().get(0) : channel.getName();
+		String chan = (event.hasChannelArg()) ? event.getArgumentList().get(0) : channel.getName();
 		
 		if (event.getBot().getUserChannelDao().channelExists(chan))
 		{

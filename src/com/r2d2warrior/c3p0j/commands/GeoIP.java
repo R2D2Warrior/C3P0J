@@ -21,7 +21,7 @@ public class GeoIP extends GenericCommand
 	public void execute()
 	{	
 		
-		String arg = event.getArgumentsList().get(0);
+		String arg = event.getArgumentList().get(0);
 		String ip = (arg.contains(".") || StringUtils.isNumeric(arg)) ? arg : userChannelDao.getUser(arg).getHostmask();
 		
 		try
