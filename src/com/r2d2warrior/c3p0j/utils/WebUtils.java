@@ -15,7 +15,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class WebUtils
 {
@@ -84,5 +86,26 @@ public class WebUtils
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static String getDefinition(String word, int defNum) throws IOException
+	{
+		String address = "http://ninjawords.com/" + word.replace(' ', '+');
+		Document doc = Jsoup.connect(address).get();
+		
+		if (doc.select("p[class=error]").size() > 0)
+			return "Word \"" + word + "\" not yet defined.";
+		
+		if (doc.select("div[class=did-you-mean]").size() > 0)
+			return "Did you mean: " + doc.select("span[class=correct-word]").first().text() + "?";
+		
+		Elements definitions = doc.select("div[class=definition]");
+		String correctWord = Utils.toTitleCase(doc.select("dt[class=title-word").first().text());
+		
+																				   //.substring(1) because first character is a bullet point
+		String def = StringEscapeUtils.unescapeHtml4(definitions.get(defNum-1).text().substring(1));
+		
+		return String.format("%s [%d/%d]: %s [%s]",
+				correctWord, defNum, definitions.size(), def, address);
 	}
 }

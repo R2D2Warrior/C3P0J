@@ -10,6 +10,7 @@ import org.pircbotx.hooks.types.GenericUserEvent;
 import bsh.EvalError;
 import bsh.Interpreter;
 
+// TODO Nick compeletion?
 public class Utils
 {
 	
