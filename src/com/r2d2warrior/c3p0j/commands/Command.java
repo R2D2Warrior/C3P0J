@@ -9,7 +9,7 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command
 {
-	String name(); // TODO Command aliases
+	String name();
 	String alt() default "";
 	String desc() default "";
 	/** Required: {@code<arg>}, Optional: [arg]*/

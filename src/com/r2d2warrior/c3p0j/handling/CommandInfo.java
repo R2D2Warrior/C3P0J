@@ -38,6 +38,6 @@ public class CommandInfo<T extends GenericCommand>
 	
 	public boolean hasAlt()
 	{
-		return !StringUtils.isBlank(alt);
+		return StringUtils.isNotBlank(alt);
 	}
 }
