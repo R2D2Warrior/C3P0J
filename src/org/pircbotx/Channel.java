@@ -21,14 +21,19 @@ package org.pircbotx;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.AtomicSafeInitializer;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -115,6 +120,10 @@ public class Channel implements Comparable<Channel> {
 	 * Channel key (+k)
 	 */
 	protected String channelKey = null;
+	/**
+	 * List of banned hostmasks (nick!user@host)
+	 */
+	protected List<String> banList = new ArrayList<>(); // Added by R2D2Warrior
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	protected boolean modeStale = false;

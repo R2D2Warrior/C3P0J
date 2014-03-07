@@ -20,8 +20,7 @@ public class Cycle extends GenericCommand
 		if (event.getBot().getUserChannelDao().channelExists(chan))
 		{
 			event.respondToUser("Trying to cycle channel: " + chan);
-			userChannelDao.getChannel(chan).send().part("Rejoining...");
-			bot.sendIRC().joinChannel(chan);
+			userChannelDao.getChannel(chan).send().cycle();
 		}
 		else
 			event.respondToUser("Not in channel: " + chan);

@@ -4,6 +4,7 @@ import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
+//Testing command for CommandEvent.completeNick(...)
 @Command(name="ping", desc="Sends a PONG")
 public class Ping extends GenericCommand
 {

@@ -90,16 +90,20 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 		if (matchUsers.size() > 1 && matchUsers.size() <= 5)
 		{
 			respondToUser("Did you mean " + Utils.commaWithOr(matchUsers));
-			return oldNick;
+			throw new IllegalArgumentException("Nick completion failed.");
 		}
 		else if (matchUsers.size() > 5)
 		{
 			respondToUser("More than 5 matches for \"" + oldNick + ",\" be more specific.");
-			return oldNick;
+			throw new IllegalArgumentException("Nick completion failed.");
 		}
-		else// if (matchUsers.size() == 1)
+		else if (matchUsers.size() == 1)
 		{
 			return matchUsers.get(0);
+		}
+		else
+		{
+			throw new IllegalArgumentException("Nick completion failed.");
 		}
 	}
 	
