@@ -6,7 +6,7 @@ import org.pircbotx.PircBotX;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.handling.FactoidManager;
 
-@Command(name="remember", desc="Saves a factoid to file. Call with ?<factoidName>", syntax="remember <name> <data>", requiresArgs = true, adminOnly = true)
+@Command(name="remember", alt="r", desc="Saves, or \"remembers\", a factoid. Call with ?<factoidName>", syntax="remember <name> <data>", requiresArgs=true, adminOnly=true)
 public class Remember extends GenericCommand
 {
 	public Remember(CommandEvent<PircBotX> event)
@@ -31,7 +31,7 @@ public class Remember extends GenericCommand
 	}
 }
 
-@Command(name="forget", requiresArgs = true, adminOnly = true)
+@Command(name="forget", alt="f", desc="Removes, or \"forgets\", a factoid", syntax="forget <factoidName>", requiresArgs=true, adminOnly=true)
 class Forget extends GenericCommand
 {
 	public Forget(CommandEvent<PircBotX> event)

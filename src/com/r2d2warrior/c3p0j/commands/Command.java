@@ -10,6 +10,7 @@ import java.lang.annotation.ElementType;
 public @interface Command
 {
 	String name(); // TODO Command aliases
+	String alt() default "";
 	String desc() default "";
 	/** Required: {@code<arg>}, Optional: [arg]*/
 	String syntax() default "";

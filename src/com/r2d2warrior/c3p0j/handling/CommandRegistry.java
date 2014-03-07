@@ -33,7 +33,8 @@ public class CommandRegistry<T extends GenericCommand>
 		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
 		{
 			cmd = cls.getAnnotation(Command.class);
-			commands.add(new CommandInfo<T>(cmd.name(), cmd.desc(), cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(), cls));
+			commands.add(new CommandInfo<T>(cmd.name(), cmd.alt(), cmd.desc(),
+					cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(), cls));
 		}
 	}
 	
@@ -83,7 +84,7 @@ public class CommandRegistry<T extends GenericCommand>
 	public Class<T> getCommandClass(String name)
 	{
 		for (CommandInfo<T> info : commands)
-			if (info.getName().equals(name))
+			if (info.getName().equals(name) || (info.hasAlt() && info.getAlt().equals(name)))
 				return info.getCommandClass();
 		
 		return null;

@@ -51,11 +51,8 @@ public class Help extends GenericCommand
 			{
 				CommandInfo<GenericCommand> info = bot.getCommandRegistry().getCommandInfo(cmd);
 				String desc = info.getDesc();
-				String syntax = StringUtils.isEmpty(info.getSyntax()) ? cmd : info.getSyntax();
-				if (info.isAdminOnly())
-					event.respondToUser(cmd.toUpperCase() + " - " + syntax + ": " + desc);
-				else
-					event.respond(cmd.toUpperCase() + " - " + syntax + ": " + desc);
+				String syntax = StringUtils.isEmpty(info.getSyntax()) ? info.getName() : info.getSyntax();
+				event.respond(cmd.toUpperCase() + " - " + syntax + ": " + desc);
 			}
 			else
 				event.respondToUser("No such command: " + cmd);
