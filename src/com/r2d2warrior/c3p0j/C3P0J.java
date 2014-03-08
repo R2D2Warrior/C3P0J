@@ -8,6 +8,7 @@ import org.reflections.Reflections;
 
 import com.r2d2warrior.c3p0j.listeners.AddListener;
 import com.r2d2warrior.c3p0j.utils.Config;
+import com.r2d2warrior.c3p0j.utils.Utils;
 
 public class C3P0J
 {
@@ -52,7 +53,7 @@ public class C3P0J
 
  		try
  		{
-			Reflections reflections = new Reflections("com.r2d2warrior.c3p0j.listeners");
+			Reflections reflections = new Reflections(Utils.getPackageName(AddListener.class));
 			for (Class<?> cls : reflections.getTypesAnnotatedWith(AddListener.class))
 			{
 				@SuppressWarnings("unchecked")

@@ -110,6 +110,15 @@ public class Utils
 		}
 	}
 	
+	public static String getPackageName(Class<?> c)
+	{
+		String name = c.getName();
+		int lastDot = name.lastIndexOf('.');
+		if (lastDot == -1)
+			return "";
+		return name.substring(0, lastDot);
+	}
+	
 	public static String getRange(List<String> list, int start)
 	{
 		return getRange(list, start, list.size()-1);

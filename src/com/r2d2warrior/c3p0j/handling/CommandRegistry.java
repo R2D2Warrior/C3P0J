@@ -12,6 +12,7 @@ import org.reflections.Reflections;
 
 import com.r2d2warrior.c3p0j.commands.Command;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
+import com.r2d2warrior.c3p0j.utils.Utils;
 
 public class CommandRegistry<T extends GenericCommand>
 {
@@ -28,7 +29,7 @@ public class CommandRegistry<T extends GenericCommand>
 	
 	private void parseAnnotations()
 	{
-		Reflections reflections = new Reflections("com.r2d2warrior.c3p0j.commands");
+		Reflections reflections = new Reflections(Utils.getPackageName(Command.class));
 		Command cmd;
 		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
 		{
