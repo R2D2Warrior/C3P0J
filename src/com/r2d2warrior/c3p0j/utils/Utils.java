@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.pircbotx.PircBotX;
+import org.pircbotx.ReplyConstants;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.WaitForQueue;
+import org.pircbotx.hooks.events.ServerResponseEvent;
 import org.pircbotx.hooks.events.WhoisEvent;
 import org.pircbotx.hooks.types.GenericChannelEvent;
 import org.pircbotx.hooks.types.GenericUserEvent;
@@ -55,6 +57,11 @@ public class Utils
 	
 	public static WhoisEvent<PircBotX> getWhoisInfo(PircBotX bot, String nick)
 	{
+		
+		if (!isOnline(bot, nick))
+			// This returns a WhoisEvent with all variables set to null
+			return new WhoisEvent.Builder<PircBotX>().generateEvent(bot);
+		
 		/*  Sending the nick twice to WHOIS ensures an idle time response.
 		 *  Only sending the nick once while not on the same server as them will not return an idle time. */
 		bot.sendRaw().rawLineNow("WHOIS " + nick + " " + nick);
@@ -63,7 +70,7 @@ public class Utils
 		try
 		{
 			@SuppressWarnings("unchecked")
-			WhoisEvent<PircBotX> whois = queue.waitFor(WhoisEvent.class);
+			WhoisEvent<PircBotX> whois = queue.waitFor(WhoisEvent.class); // This will get a WhoisEvent when a WHOIS reply ends
 			queue.close();
 			return whois;
 		}
@@ -72,6 +79,34 @@ public class Utils
 			e.printStackTrace();
 			queue.close();
 			return null;
+		}
+	}
+	
+	public static boolean isOnline(PircBotX bot, String nick)
+	{
+		bot.sendRaw().rawLineNow("ISON " + nick);
+		WaitForQueue queue = new WaitForQueue(bot);
+		
+		try
+		{
+			@SuppressWarnings("unchecked")
+			ServerResponseEvent<PircBotX> serv = queue.waitFor(ServerResponseEvent.class);
+			queue.close();
+			if (serv.getCode() == ReplyConstants.RPL_ISON)
+			{
+				// .getRawLine() = ":chaos.esper.net 303 Botnick :Nick"
+				String[] line = serv.getRawLine().split(":"); // = ["", "chaos.esper.net 303 Botnick ", " Nick "]
+				
+				//line.length == 2 when the nick isn't online
+				return line.length > 2 && StringUtils.strip(line[2]).equalsIgnoreCase(nick);
+			}
+			return false;
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+			queue.close();
+			return false;
 		}
 	}
 	

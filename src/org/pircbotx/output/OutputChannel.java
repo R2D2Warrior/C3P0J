@@ -394,10 +394,9 @@ public class OutputChannel {
 	 * Successful use of this method may require the bot to have operator
 	 * status itself.
 	 *
-	 * @param channel The channel to unban the user from.
 	 * @param hostmask A hostmask representing the user we're unbanning.
 	 */
-	public void unBan(Channel channel, String hostmask) {
+	public void unBan(String hostmask) {
 		if (hostmask == null)
 			throw new IllegalArgumentException("Can't remove ban on null hostmask");
 		bot.sendRaw().rawLine("MODE " + channel.getName() + " -b " + hostmask);
