@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Event;
+import org.pircbotx.hooks.WaitForQueue;
+import org.pircbotx.hooks.events.WhoisEvent;
 import org.pircbotx.hooks.types.GenericChannelEvent;
 import org.pircbotx.hooks.types.GenericUserEvent;
 
@@ -49,6 +51,28 @@ public class Utils
 			return null;
 		}
 		return i;
+	}
+	
+	public static WhoisEvent<PircBotX> getWhoisInfo(PircBotX bot, String nick)
+	{
+		/*  Sending the nick twice to WHOIS ensures an idle time response.
+		 *  Only sending the nick once while not on the same server as them will not return an idle time. */
+		bot.sendRaw().rawLineNow("WHOIS " + nick + " " + nick);
+		WaitForQueue queue = new WaitForQueue(bot);
+
+		try
+		{
+			@SuppressWarnings("unchecked")
+			WhoisEvent<PircBotX> whois = queue.waitFor(WhoisEvent.class);
+			queue.close();
+			return whois;
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+			queue.close();
+			return null;
+		}
 	}
 	
 	public static String getRange(List<String> list, int start)

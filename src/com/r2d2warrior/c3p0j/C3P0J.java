@@ -33,7 +33,6 @@ public class C3P0J
 			.addCapHandler(new EnableCapHandler("extended-join", true))
 			.addCapHandler(new EnableCapHandler("account-notify", true))
 			
-
 				//Command management
 			.addAdminAccounts("R2D2Warrior", "CHCMATT", "Vgr255", "ChasedSpade")
 			.addPrefix(".", "MESSAGE")

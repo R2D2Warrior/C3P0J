@@ -730,39 +730,39 @@ public class InputParser implements Closeable {
 			builder.setLogin(parsedResponse.get(2));
 			builder.setHostname(parsedResponse.get(3));
 			builder.setRealname(parsedResponse.get(5));
-			whoisBuilder.put(whoisNick, builder);
+			whoisBuilder.put(whoisNick.toLowerCase(), builder);
 		} else if (code == RPL_AWAY)
 			//Example: 301 PircBotXUser TheLQ_ :I'm away, sorry
 			bot.getUserChannelDao().getUser(parsedResponse.get(1)).setAwayMessage(parsedResponse.get(2));
 		else if (code == RPL_WHOISCHANNELS) {
 			//Example: 319 TheLQ Plazma :+#freenode
 			//Channel list from whois. Re-tokenize since they're after the :
-			String whoisNick = parsedResponse.get(1);
+			String whoisNick = parsedResponse.get(1).toLowerCase();
 			ImmutableList<String> parsedChannels = ImmutableList.copyOf(Utils.tokenizeLine(parsedResponse.get(2)));
 
 			whoisBuilder.get(whoisNick).setChannels(parsedChannels);
 		} else if (code == RPL_WHOISSERVER) {
 			//Server info from whois
 			//312 TheLQ Plazma leguin.freenode.net :Ume?, SE, EU
-			String whoisNick = parsedResponse.get(1);
+			String whoisNick = parsedResponse.get(1).toLowerCase();
 
 			whoisBuilder.get(whoisNick).setServer(parsedResponse.get(2));
 			whoisBuilder.get(whoisNick).setServerInfo(parsedResponse.get(3));
 		} else if (code == RPL_WHOISIDLE) {
 			//Idle time from whois
 			//317 TheLQ md_5 6077 1347373349 :seconds idle, signon time
-			String whoisNick = parsedResponse.get(1);
+			String whoisNick = parsedResponse.get(1).toLowerCase();
 
 			whoisBuilder.get(whoisNick).setIdleSeconds(Long.parseLong(parsedResponse.get(2)));
 			whoisBuilder.get(whoisNick).setSignOnTime(Long.parseLong(parsedResponse.get(3)));
 		} else if (code == 330)
 			//RPL_WHOISACCOUNT: Extra Whois info
 			//330 TheLQ Utoxin Utoxin :is logged in as
-			whoisBuilder.get(parsedResponse.get(1)).setRegisteredAs(parsedResponse.get(2));
+			whoisBuilder.get(parsedResponse.get(1).toLowerCase()).setRegisteredAs(parsedResponse.get(2));
 		else if (code == RPL_ENDOFWHOIS) {
 			//End of whois
 			//318 TheLQ Plazma :End of /WHOIS list.
-			String whoisNick = parsedResponse.get(1);
+			String whoisNick = parsedResponse.get(1).toLowerCase();
 
 			configuration.getListenerManager().dispatchEvent(whoisBuilder.get(whoisNick).generateEvent(bot));
 			whoisBuilder.remove(whoisNick);
