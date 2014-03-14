@@ -76,7 +76,6 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 		getUser().send().notice(response);
 	}
 	
-	//TODO WIP: compelteNick(String oldNick)
 	public String completeNick(String oldNick)
 	{
 		List<User> usersInChannel = bot.getUserChannelDao().getUsers(channel).asList();

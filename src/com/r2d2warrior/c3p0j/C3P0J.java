@@ -30,7 +30,6 @@ public class C3P0J
 			.setAutoNickChange(true)
 			.setCapEnabled(true)
 			
-				// TODO CHCMATT BNC Eating capabilities, find a work-around
 			.addCapHandler(new EnableCapHandler("extended-join", true))
 			.addCapHandler(new EnableCapHandler("account-notify", true))
 			
@@ -56,12 +55,13 @@ public class C3P0J
 			Reflections reflections = new Reflections(Utils.getPackageName(AddListener.class));
 			for (Class<?> cls : reflections.getTypesAnnotatedWith(AddListener.class))
 			{
+				// TODO Figure out how to avoid this warning: "Unchecked cast from capture#1-of ? to Listener<PircBotX>"
 				@SuppressWarnings("unchecked")
 				Listener<PircBotX> listener = (Listener<PircBotX>) cls.newInstance();
 				builder.addListener(listener);
 			}
  		}
- 		catch (IllegalAccessException | InstantiationException e)
+ 		catch (ReflectiveOperationException e)
  		{
  			e.printStackTrace();
  		}

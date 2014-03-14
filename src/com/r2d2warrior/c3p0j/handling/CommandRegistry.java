@@ -1,7 +1,6 @@
 package com.r2d2warrior.c3p0j.handling;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,15 +65,13 @@ public class CommandRegistry<T extends GenericCommand>
 			return needsArgsError + info.getSyntax();
 		
 		try
-		{	
-			@SuppressWarnings("unchecked")
-			Constructor<T> constuct = (Constructor<T>) cls.getConstructors()[0];
+		{
+			Constructor<T> constuct = cls.getConstructor(CommandEvent.class);
 			constuct.setAccessible(true);
-
 			constuct.newInstance(event).execute();
 		}
 		//TODO Throw all exceptions during command execution to execute() to be caught here
-		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		catch (ReflectiveOperationException e)
 		{
 			e.printStackTrace();
 			return commandError;
