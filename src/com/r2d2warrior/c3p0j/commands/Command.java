@@ -9,11 +9,16 @@ import java.lang.annotation.ElementType;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command
 {
+	/** The name of the command*/
 	String name();
+	/** An alternate name for the command*/
 	String alt() default "";
+	/** The command's description*/
 	String desc() default "";
 	/** Required: {@code<arg>}, Optional: [arg]*/
 	String syntax() default "";
+	/** If the command requires any arguments or not. Default <code>false</code>*/
 	boolean requiresArgs() default false;
+	/** If the command requires admin status to use. Default <code>false</code>*/
 	boolean adminOnly() default false;
 }

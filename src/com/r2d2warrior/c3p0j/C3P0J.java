@@ -55,10 +55,13 @@ public class C3P0J
 			Reflections reflections = new Reflections(Utils.getPackageName(AddListener.class));
 			for (Class<?> cls : reflections.getTypesAnnotatedWith(AddListener.class))
 			{
-				// TODO Figure out how to avoid this warning: "Unchecked cast from capture#1-of ? to Listener<PircBotX>"
-				@SuppressWarnings("unchecked")
-				Listener<PircBotX> listener = (Listener<PircBotX>) cls.newInstance();
-				builder.addListener(listener);
+				if (cls.getAnnotation(AddListener.class).value())
+				{
+					// TODO Figure out how to avoid this warning: "Unchecked cast from capture#1-of ? to Listener<PircBotX>"
+					@SuppressWarnings("unchecked")
+					Listener<PircBotX> listener = (Listener<PircBotX>) cls.newInstance();
+					builder.addListener(listener);
+				}
 			}
  		}
  		catch (ReflectiveOperationException e)

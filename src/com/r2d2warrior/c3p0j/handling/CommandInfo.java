@@ -7,6 +7,9 @@ import com.r2d2warrior.c3p0j.commands.GenericCommand;
 import lombok.AccessLevel;
 import lombok.Getter;
 
+/**
+ * Class to hold all information from a single <code>@Command</code> annotation
+ */
 @Getter
 public class CommandInfo<T extends GenericCommand>
 {
