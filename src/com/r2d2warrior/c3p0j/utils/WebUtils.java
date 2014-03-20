@@ -4,31 +4,44 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
+import org.jsoup.examples.HtmlToPlainText;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class WebUtils
 {
+	private static HttpURLConnection getConnection(String url)
+	{
+		try
+		{
+			return (HttpURLConnection) new URL(url).openConnection();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public static List<Map<String, String>> getUrbanDictionDefinitions(String searchTerm)
 	{
 		try
 		{
-			searchTerm = searchTerm.replace(' ', '+');
-			HttpURLConnection conn = (HttpURLConnection) new URL("http://api.urbandictionary.com/v0/define?term=" + searchTerm).openConnection();
+			String address = "http://api.urbandictionary.com/v0/define?term=" + searchTerm.replace(' ', '+');
 			
-			Scanner in = new Scanner(conn.getInputStream());
+			Scanner in = new Scanner(getConnection(address).getInputStream());
 			
 			String json = "";
 			while (in.hasNext())
@@ -49,6 +62,47 @@ public class WebUtils
 		}
 		
 		return null;
+	}
+	
+	public static String getCalculation(String input) throws IOException, ParseException, IllegalArgumentException
+	{
+		String address = String.format("http://api.duckduckgo.com/?q=%s&format=json", URLEncoder.encode(input.replace(" ", ""), "UTF-8"));
+		InputStreamReader in = new InputStreamReader(getConnection(address).getInputStream());
+		JSONObject data = (JSONObject) new JSONParser().parse(in);
+		
+		String answerType = (String) data.get("AnswerType");
+		if (!answerType.equals("calc"))
+			throw new IllegalArgumentException("Result not a calculation: " + input + ". Result here: " + address);
+		
+		String htmlResult = (String) data.get("Answer");
+		if (htmlResult.contains("<sup>") && htmlResult.contains("</sup>"))
+			htmlResult = htmlResult.replace("<sup>", " ^ ").replace("</sup>", "");
+		
+		String strippedResult = new HtmlToPlainText().getPlainText(Jsoup.parse(htmlResult));
+		if (strippedResult.endsWith("<>"))
+			strippedResult = strippedResult.replace("<>", "");
+		return strippedResult;
+	}
+	
+	public static Map<String, String> getCommitData(String name) throws IOException, ParseException
+	{
+		String address = "https://api.github.com/repos/" + name + "/branches/master";
+		HttpURLConnection conn = (HttpURLConnection) new URL(address).openConnection();
+		
+		JSONObject allData = (JSONObject) new JSONParser().parse(new InputStreamReader(conn.getInputStream()));
+		JSONObject allCommitData = (JSONObject) allData.get("commit");
+		JSONObject commitData = (JSONObject) allCommitData.get("commit");
+		
+		@SuppressWarnings("unchecked")
+		String authorName = (String) ((Map<String, String>) commitData.get("author")).get("name");
+		String commitMessage = (String) commitData.get("message");
+		String commitURL = (String) allCommitData.get("html_url");
+		
+		Map<String, String> results = new HashMap<>();
+		results.put("author", authorName);
+		results.put("message", commitMessage);
+		results.put("url", commitURL);
+		return results;
 	}
 	
 	public static Map<String, String> getLocationData(String ip) throws IOException, ParseException

@@ -34,7 +34,7 @@ public class C3P0J
 			.addCapHandler(new EnableCapHandler("account-notify", true))
 			
 				//Command management
-			.addAdminAccounts("R2D2Warrior", "CHCMATT", "Vgr255", "ChasedSpade")
+			.addAdminAccounts("R2D2Warrior", "CHCMATT", "Vgr255", "ChasedSpade") // TODO Permissions system
 			.addPrefix(".", "MESSAGE")
 			.addPrefix("@", "NOTICE")
 			.setFactoidPrefix("?")
