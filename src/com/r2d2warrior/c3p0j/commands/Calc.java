@@ -8,7 +8,7 @@ import org.pircbotx.PircBotX;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.WebUtils;
 
-@Command(name="calc", requiresArgs=true)
+@Command(name="calc", desc="Calculates a math expression (duckduckgo.com)", syntax = "calc <expression>", requiresArgs=true)
 public class Calc extends GenericCommand
 {
 	public Calc(CommandEvent<PircBotX> event)

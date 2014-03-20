@@ -120,7 +120,7 @@ public class WebUtils
 	 * @throws ParseException
 	 * @see #getJSON(String, String)
 	 */
-	public static List<Map<String,String>> getDefinition(String input) throws IOException, ParseException
+	public static List<Map<String,String>> getDefinitions(String input) throws IOException, ParseException
 	{		
 		JSONObject data = getJSON("http://api.duckduckgo.com/?q=%s&format=json", input);
 		

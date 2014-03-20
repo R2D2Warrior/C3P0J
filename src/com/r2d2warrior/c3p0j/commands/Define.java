@@ -12,7 +12,7 @@ import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.Utils;
 import com.r2d2warrior.c3p0j.utils.WebUtils;
 
-@Command(name="define", desc="Gets the definition for a word (ninjawords.com)", syntax="define <word> [def #]", requiresArgs=true)
+@Command(name="define", desc="Gets the definition for a word (duckduckgo.com)", syntax="define <word> [def #]", requiresArgs=true)
 public class Define extends GenericCommand
 {
 	public Define(CommandEvent<PircBotX> event)
@@ -40,7 +40,7 @@ public class Define extends GenericCommand
 		
 		try
 		{
-			List<Map<String, String>> defs = WebUtils.getDefinition(searchTerm);
+			List<Map<String, String>> defs = WebUtils.getDefinitions(searchTerm);
 			if (defs.size() == 0)
 			{
 				event.respondToUser("No definitions found for \"" + searchTerm + "\".");
