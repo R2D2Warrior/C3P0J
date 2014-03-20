@@ -8,7 +8,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -16,101 +16,148 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.examples.HtmlToPlainText;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class WebUtils
 {
-	private static HttpURLConnection getConnection(String url)
+	
+	protected final static JSONParser PARSER = new JSONParser();
+	
+	/**
+	 * Reads a URL and trys to parse JSON from it
+	 * @param formattedUrl The URL, to be used in String.format(...)
+	 * @param input The argument to be used in String.format(...)
+	 * @param encodeInput Set to <code>true</code> to encode the input using URLEncoder.encode(...)
+	 * @return a JSONObject representing all of the JSON data on the URL
+	 * @throws IOException If fails to connect to or read the URL
+	 * @throws ParseException If fails to parse the URL for JSON
+	 */
+	public static JSONObject getJSON(String formattedUrl, String input, boolean encodeInput) throws IOException, ParseException
 	{
-		try
-		{
-			return (HttpURLConnection) new URL(url).openConnection();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		if (encodeInput)
+			input = URLEncoder.encode(input, "UTF-8");
+		String fullUrl = String.format(formattedUrl, input);
+		HttpURLConnection conn = (HttpURLConnection) new URL(fullUrl).openConnection();
+		JSONObject json = (JSONObject) PARSER.parse(new InputStreamReader(conn.getInputStream()));
+		return json;
 	}
 	
-	public static List<Map<String, String>> getUrbanDictionDefinitions(String searchTerm)
+	/**
+	 * Utility method for {@link #getJSON(String formattedUrl, String input , boolean encodeInput)},
+	 * setting <code>encodeInput</code> argument to <code>true</code>
+	 */
+	public static JSONObject getJSON(String formattedUrl, String input) throws IOException, ParseException
 	{
-		try
-		{
-			String address = "http://api.urbandictionary.com/v0/define?term=" + searchTerm.replace(' ', '+');
-			
-			Scanner in = new Scanner(getConnection(address).getInputStream());
-			
-			String json = "";
-			while (in.hasNext())
-				json += in.nextLine() + "\n";
-			
-			JSONParser parser = new JSONParser();
-			Map<?, ?> jMap = ((Map<?, ?>)parser.parse(json));
-			
-			@SuppressWarnings("unchecked")
-			List<Map<String, String>> definitionMapList = (List<Map<String, String>>)jMap.get("list");
-			
-			in.close();
-			return definitionMapList;
-		}
-		catch (IOException | ParseException e)
-		{
-			e.printStackTrace();
-		}
+		return getJSON(formattedUrl, input, true);
+	}
+
+	/**
+	 * Looks up a search term or phrase on <a href="http://www.urbandictionary.com">urbandictionary.com</a> and get first 10 definitions
+	 * <p>
+	 * An String to String map entry in the return List would look as follows:
+	 * <p><code>
+	 * {<br>
+	 * "defid":855655,<br>
+	 *  "word":"Java",<br>
+	 *  "author":"Nidht",<br>
+	 *  "permalink":"http://java.urbanup.com/855655",<br>
+	 *  "definition":"A programming language commonly used as a solution to everything and anything.",<br>
+	 *  "example":"Just do it in java!\r\nFix it... with java!\r\n\r\njava;",<br>
+	 *  "thumbs_up":549,<br>
+	 *  "thumbs_down":166,<br>
+	 *  "current_vote":""<br>
+	 *  },</code>
+	 * @param searchTerm The term or phrase to search for
+	 * @return A List of String to String maps for each definition. See example above
+	 * @throws IOException
+	 * @throws ParseException
+	 * @see #getJSON(String, String)
+	 */
+	public static List<Map<String, String>> getUrbanDictionaryDefinitions(String searchTerm) throws IOException, ParseException
+	{		
+		Map<?, ?> json = (Map<?, ?>) getJSON("http://api.urbandictionary.com/v0/define?term=%s", searchTerm);
 		
-		return null;
+		@SuppressWarnings("unchecked")
+		List<Map<String, String>> defsMapList = (List<Map<String, String>>) json.get("list");
+
+		return defsMapList;
 	}
 	
+	/**
+	 * Trys to calculate a mathmatical expression using <a href="http://www.duckduckgo.com/">www.duckduckgo.com</a>
+	 * @param input The math expression, with or without spaces
+	 * @return The math expression, followed by an equals sign, then the answer. Example: <i>"1 + 1 = 2"</i> 
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws IllegalArgumentException If the search for <code>input</code> isn't a calculation. (Tried to define it)
+	 * @see #getJSON(String, String)
+	 */
 	public static String getCalculation(String input) throws IOException, ParseException, IllegalArgumentException
 	{
-		String address = String.format("http://api.duckduckgo.com/?q=%s&format=json", URLEncoder.encode(input.replace(" ", ""), "UTF-8"));
-		InputStreamReader in = new InputStreamReader(getConnection(address).getInputStream());
-		JSONObject data = (JSONObject) new JSONParser().parse(in);
+		JSONObject data = getJSON("http://api.duckduckgo.com/?q=%s&format=json", input);
 		
-		String answerType = (String) data.get("AnswerType");
-		if (!answerType.equals("calc"))
-			throw new IllegalArgumentException("Result not a calculation: " + input + ". Result here: " + address);
+		if (!data.get("AnswerType").equals("calc"))
+			throw new IllegalArgumentException("Result not a calculation: " + input + ".");
 		
 		String htmlResult = (String) data.get("Answer");
+		
 		if (htmlResult.contains("<sup>") && htmlResult.contains("</sup>"))
-			htmlResult = htmlResult.replace("<sup>", " ^ ").replace("</sup>", "");
+			htmlResult = htmlResult.replaceAll("<sup>", " ^ ").replaceAll("</sup>", "");
 		
 		String strippedResult = new HtmlToPlainText().getPlainText(Jsoup.parse(htmlResult));
+		
 		if (strippedResult.endsWith("<>"))
 			strippedResult = strippedResult.replace("<>", "");
+		
 		return strippedResult;
 	}
 	
-	public static Map<String, String> getCommitData(String name) throws IOException, ParseException
-	{
-		String address = "https://api.github.com/repos/" + name + "/branches/master";
-		HttpURLConnection conn = (HttpURLConnection) new URL(address).openConnection();
-		
-		JSONObject allData = (JSONObject) new JSONParser().parse(new InputStreamReader(conn.getInputStream()));
-		JSONObject allCommitData = (JSONObject) allData.get("commit");
-		JSONObject commitData = (JSONObject) allCommitData.get("commit");
+	/**
+	 * Looks up a search term or phrase using <a href="http://www.duckduckgo.com/">www.duckduckgo.com</a>
+	 * @param input The search term or phrase
+	 * @return A List of String to String maps of definitions. See <a href="http://api.duckduckgo.com/?q=java&format=json&pretty=1">this</a> for return example.
+	 * @throws IOException
+	 * @throws ParseException
+	 * @see #getJSON(String, String)
+	 */
+	public static List<Map<String,String>> getDefinition(String input) throws IOException, ParseException
+	{		
+		JSONObject data = getJSON("http://api.duckduckgo.com/?q=%s&format=json", input);
 		
 		@SuppressWarnings("unchecked")
-		String authorName = (String) ((Map<String, String>) commitData.get("author")).get("name");
-		String commitMessage = (String) commitData.get("message");
-		String commitURL = (String) allCommitData.get("html_url");
-		
-		Map<String, String> results = new HashMap<>();
-		results.put("author", authorName);
-		results.put("message", commitMessage);
-		results.put("url", commitURL);
-		return results;
+		List<Map<String, String>> defs = (List<Map<String, String>>) data.get("RelatedTopics");
+		if (defs.size() > 1)
+			defs.remove(defs.size()-1);
+		return defs;
 	}
 	
+	/**
+	 * Looks up an ip address and gathers location information using <code>http://geo.liamstanley.io/json/[ip-address]</code>
+	 * <p>
+	 * The return map might look like this:
+	 * <p><code>
+	 * {<br>
+	 *  "ip":"70.160.210.75",<br>
+	 *  "country_code":"US",<br>
+	 *  "country_name":"United States",<br>
+	 *  "region_code":"VA",<br>
+	 *  "region_name":"Virginia",<br>
+	 *  "city":"Virginia Beach",<br>
+	 *  "zipcode":"23453",<br>
+	 *  "latitude":36.7849,<br>
+	 *  "longitude":-76.0839,<br>
+	 *  "metro_code":"544",<br>
+	 *  "areacode":"757"<br>
+	 *  }</code>
+	 * @param ip The ip address
+	 * @return A String to String map of location information (see above). <i>Note: check for "country_code" being "Reserved"</i>
+	 * @throws IOException
+	 * @throws ParseException
+	 * @see #getJSON(String, String)
+	 */
 	public static Map<String, String> getLocationData(String ip) throws IOException, ParseException
 	{
-		String address = "http://geo.liamstanley.io/json/" + ip;
-		HttpURLConnection conn = (HttpURLConnection) new URL(address).openConnection();
-		JSONObject data =
-				(JSONObject)new JSONParser().parse(new InputStreamReader(conn.getInputStream()));
+		JSONObject data = getJSON("http://geo.liamstanley.io/json/%s", ip);
 		
 		Map<String, String> results = new HashMap<>();
 		for (Object o : data.keySet())
@@ -120,46 +167,27 @@ public class WebUtils
 			if (val.equals("0") || StringUtils.isBlank(val))
 				results.put(key, "N/A");
 			else
-				results.put(key, Utils.toTitleCase(val));
+			{
+				if (key.equals("country_code"))
+					results.put(key, val.toUpperCase());
+				else
+					results.put(key, Utils.toTitleCase(val));
+			}
 		}
 		return results;
 	}
 	
-	public static String getRandomFML()
+	/**
+	 * Retrieves a random FML statement from http://www.fmylife.com/random
+	 * @return The random statement
+	 * @throws IOException If fails to connect to or read the URL
+	 */
+	public static String getRandomFML() throws IOException
 	{
 		String address = "http://www.fmylife.com/random";
-		
-		try
-		{
-			Element element = Jsoup.connect(address).get().select("li[id]").first().select("p").first();
-			String fml = StringEscapeUtils.unescapeHtml4(element.html()) + ".";
-			return fml;
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public static String getDefinition(String word, int defNum) throws IOException
-	{
-		String address = "http://ninjawords.com/" + word.replace(' ', '+');
-		Document doc = Jsoup.connect(address).get();
-		
-		if (doc.select("p[class=error]").size() > 0)
-			return "Word \"" + word + "\" not yet defined.";
-		
-		if (doc.select("div[class=did-you-mean]").size() > 0)
-			return "Did you mean: " + doc.select("span[class=correct-word]").first().text() + "?";
-		
-		Elements definitions = doc.select("div[class=definition]");
-		String correctWord = Utils.toTitleCase(doc.select("dt[class=title-word").first().text());
-		
-																				   //.substring(1) because first character is a bullet point
-		String def = StringEscapeUtils.unescapeHtml4(definitions.get(defNum-1).text().substring(1));
-		
-		return String.format("%s [%d/%d]: %s [%s]",
-				correctWord, defNum, definitions.size(), def, address);
+		Element element = Jsoup.connect(address).get().select("li[id]").first().select("p").first();
+		String fml = StringEscapeUtils.unescapeHtml4(element.html()) + ".";
+		return fml;
+
 	}
 }

@@ -5,11 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-import lombok.Getter;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import lombok.Getter;
 
 public class Config
 {
@@ -44,7 +44,8 @@ public class Config
 		{
 			
 			@SuppressWarnings("unchecked")
-			Map<String, Map<String, String>> config = (Map<String, Map<String, String>>) new JSONParser().parse(new FileReader(fileName));
+			Map<String, Map<String, String>> config =
+			(Map<String, Map<String, String>>) new JSONParser().parse(new FileReader(fileName));
 			
 			return config;
 		}

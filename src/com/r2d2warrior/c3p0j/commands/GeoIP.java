@@ -39,7 +39,7 @@ public class GeoIP extends GenericCommand
 		}
 		catch (IOException e)
 		{
-			event.respondToUser("Error while connecting to URL.");
+			event.respondToUser("Error while connecting to URL: " + e.getMessage().split("URL: ")[1]);
 			e.printStackTrace();
 		}
 		catch (ParseException e)

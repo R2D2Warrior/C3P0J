@@ -1,5 +1,7 @@
 package com.r2d2warrior.c3p0j.commands;
 
+import java.io.IOException;
+
 import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
@@ -15,6 +17,14 @@ public class FMyLife extends GenericCommand
 	
 	public void execute()
 	{
-		event.respond(WebUtils.getRandomFML());
+		try
+		{
+			event.respond(WebUtils.getRandomFML());
+		}
+		catch (IOException e)
+		{
+			event.respondToUser("An error occurred while connecting to or reading URL.");
+			e.printStackTrace();
+		}
 	}
 }
