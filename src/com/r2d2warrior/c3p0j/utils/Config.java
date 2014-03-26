@@ -22,17 +22,7 @@ public class Config
 		this.fileName = fileName;
 		this.map = getFileMap();
 	}
-	
-	public String getPassword(String type)
-	{
-		return map.get("passwords").get(type.toLowerCase());
-	}
-	
-	public String getFactoidData(String name)
-	{
-		return map.get("factoids").get(name.toLowerCase());
-	}
-	
+
 	public void update()
 	{
 		updateFileMap(map);

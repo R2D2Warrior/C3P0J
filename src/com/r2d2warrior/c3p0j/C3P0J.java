@@ -17,7 +17,7 @@ public class C3P0J
 	{
 		// TODO Improve config file
 		Config c = new Config("config.json");
-		String password = c.getPassword("nickserv");
+		String password = c.getMap().get("passwords").get("nickserv");
 		
  		Configuration.Builder<PircBotX> builder = new Configuration.Builder<PircBotX>()
  				

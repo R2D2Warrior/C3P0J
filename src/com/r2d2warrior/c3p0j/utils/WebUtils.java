@@ -3,12 +3,15 @@ package com.r2d2warrior.c3p0j.utils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -37,6 +40,7 @@ public class WebUtils
 		if (encodeInput)
 			input = URLEncoder.encode(input, "UTF-8");
 		String fullUrl = String.format(formattedUrl, input);
+		System.out.println(fullUrl);
 		HttpURLConnection conn = (HttpURLConnection) new URL(fullUrl).openConnection();
 		JSONObject json = (JSONObject) PARSER.parse(new InputStreamReader(conn.getInputStream()));
 		return json;
@@ -50,7 +54,26 @@ public class WebUtils
 	{
 		return getJSON(formattedUrl, input, true);
 	}
+	
+	public static List<String> getWolframAlphaData(String search) throws IOException
+	{
+		String url = "http://tumbolia.appspot.com/wa/" + URLEncoder.encode(search, "UTF-8").replace("+", "%20");
+		String[] output = IOUtils.toString(new URL(url)).split(";");
+		return Arrays.asList(output);
+	}
 
+	/**
+	 * Evaluates python code using http://tumbolia.appspot.com/py/code_here and returns the output
+	 * @param code The code to execute or evaluate
+	 * @return Standard output after evaluating the code
+	 * @throws IOException If cannot connect to or read URL
+	 */
+	public static String evaluatePython(String code) throws IOException
+	{
+		String url = "http://tumbolia.appspot.com/py/" + URLEncoder.encode(code, "UTF-8").replace("+", "%20");
+		return IOUtils.toString(new URL(url));
+	}
+	
 	/**
 	 * Looks up a search term or phrase on <a href="http://www.urbandictionary.com">urbandictionary.com</a> and get first 10 definitions
 	 * <p>
