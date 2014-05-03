@@ -48,6 +48,7 @@ public class Utils
 			i.eval("import org.pircbotx.*");
 			i.eval("import java.lang.reflect.*");
 			i.eval("import java.util.*");
+			i.eval("import org.apache.commons.lang3.StringUtils");
 		}
 		catch (EvalError e)
 		{

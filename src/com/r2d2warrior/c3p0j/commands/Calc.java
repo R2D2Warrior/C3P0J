@@ -16,7 +16,7 @@ public class Calc extends GenericCommand
 		super(event);
 	}
 	
-	public void execute()
+	public void execute() // TODO Add option for "expression, x = #", where "x" is replaced with "#" in "expression", before sending request
 	{
 		try
 		{

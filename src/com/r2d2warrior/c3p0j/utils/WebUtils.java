@@ -2,11 +2,11 @@ package com.r2d2warrior.c3p0j.utils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +55,32 @@ public class WebUtils
 		return getJSON(formattedUrl, input, true);
 	}
 	
-	public static List<String> getWolframAlphaData(String search) throws IOException
+	/**
+	 * Create a short URL (goo.gl) from a long URL
+	 * @param url The long url to be shortened
+	 * @return The short URL
+	 * @throws IOException If cannot connect to or send to google's api
+	 * @throws ParseException If cannot parse the response
+	 */
+	public static String shortenURL(String url) throws IOException, ParseException
 	{
-		String url = "http://tumbolia.appspot.com/wa/" + URLEncoder.encode(search, "UTF-8").replace("+", "%20");
-		String[] output = IOUtils.toString(new URL(url)).split(";");
-		return Arrays.asList(output);
-	}
+		String apiKey = new Config("config.json").getMap().get("api").get("googl");
+		String apiURL = "https://www.googleapis.com/urlshortener/v1/url?key=" + apiKey;
+		URLConnection conn = new URL(apiURL).openConnection();
+		
+		conn.setDoOutput(true);
+		conn.setRequestProperty("Content-Type", "application/json");
+		
+		OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+		wr.write("{\"longUrl\":\"" + url + "\"}");
+		wr.flush();
+		wr.close();
+		
+		JSONObject json = (JSONObject) new JSONParser().parse(new InputStreamReader(conn.getInputStream()));
 
+		String shortURL = json.get("id").toString();
+		return shortURL;
+	}
 	/**
 	 * Evaluates python code using http://tumbolia.appspot.com/py/code_here and returns the output
 	 * @param code The code to execute or evaluate
@@ -102,7 +121,7 @@ public class WebUtils
 		
 		@SuppressWarnings("unchecked")
 		List<Map<String, String>> defsMapList = (List<Map<String, String>>) json.get("list");
-
+		
 		return defsMapList;
 	}
 	
@@ -211,6 +230,6 @@ public class WebUtils
 		Element element = Jsoup.connect(address).get().select("li[id]").first().select("p").first();
 		String fml = StringEscapeUtils.unescapeHtml4(element.html()) + ".";
 		return fml;
-
+		
 	}
 }

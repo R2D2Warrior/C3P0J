@@ -32,6 +32,12 @@ public class CommandListener extends ListenerAdapter<PircBotX>
 		if (bot.getConfiguration().getPrefixes().containsKey(message.substring(0, 1)))
 			// Messages starts with a valid prefix -- call command event
 			bot.getConfiguration().getListenerManager().dispatchEvent(new CommandEvent<PircBotX>(bot, channel, user, message));
+		else
+		{
+			String[] args = message.split(" ");
+			if (args[0].equalsIgnoreCase(bot.getNick() + ","))
+				bot.getConfiguration().getListenerManager().dispatchEvent(new CommandEvent<PircBotX>(bot, channel, user, message));
+		}
 		
 	}
 	

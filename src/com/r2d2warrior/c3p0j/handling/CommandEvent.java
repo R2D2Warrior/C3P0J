@@ -47,12 +47,21 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 		this.message = message;
 		
 		List<String> msg = new StrTokenizer(message).getTokenList();
-		this.arguments = (msg.size() > 1) ? StringUtils.split(message, " ", 2)[1] : "";
+		this.arguments = (msg.size() > 1) ? Utils.getRange(msg, 1) : "";
 		
 		if (channel != null)
 		{
-			this.prefix = msg.get(0).substring(0, 1);
-			this.commandName = msg.get(0).substring(1);
+			if (msg.get(0).equalsIgnoreCase(bot.getNick() + ","))
+			{
+				this.prefix = bot.getNick() + ",";
+				this.commandName = msg.get(1);
+				this.arguments = Utils.getRange(msg, 2);
+			}
+			else
+			{
+				this.prefix = msg.get(0).substring(0, 1);
+				this.commandName = msg.get(0).substring(1);
+			}
 		}
 		else
 		{
@@ -68,7 +77,9 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 	{
 		if (prefix != null)
 		{
-			if (getBot().getConfiguration().getPrefixes().get(prefix).equals("NOTICE"))
+			if (prefix.equalsIgnoreCase(bot.getNick() + ","))
+				getChannel().send().message(response);
+			else if (getBot().getConfiguration().getPrefixes().get(prefix).equals("NOTICE"))
 				getUser().send().notice(response);
 			else if (getBot().getConfiguration().getPrefixes().get(prefix).equals("MESSAGE"))
 				getChannel().send().message(response);
