@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.pircbotx.PircBotX;
 import org.pircbotx.ReplyConstants;
+import org.pircbotx.User;
 import org.pircbotx.hooks.Event;
 import org.pircbotx.hooks.WaitForQueue;
 import org.pircbotx.hooks.events.ServerResponseEvent;
@@ -111,6 +112,20 @@ public class Utils
 			queue.close();
 			return false;
 		}
+	}
+	
+	public static int getMessageLimit(GenericChannelEvent<PircBotX> event)
+	{
+		
+		
+		User userBot = event.getBot().getUserBot();
+		String messageFormat = String.format( // :nick!user@host PRIVMSG #targetname :text here
+					":%s!%s@%s PRIVMSG %s :",
+					userBot.getNick(), userBot.getLogin(),
+					userBot.getHostmask(), event.getChannel().getName()
+				);
+		
+		return 512 - messageFormat.length();
 	}
 	
 	public static String getPackageName(Class<?> c)

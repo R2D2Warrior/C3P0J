@@ -37,6 +37,7 @@ public class WolframQuery
 	private LinkedHashMap<String, String> otherPodIDMap;
 	@Getter
 	private String bestID;
+	@Getter
 	private List<String> definitions;
 	
 	public WolframQuery(String query) throws WAException
@@ -66,12 +67,16 @@ public class WolframQuery
 		// Get the input interpretation
 		this.inputInterpretation = fullPodMap.get("Input").trim().replaceAll(" +", " ");
 		
+		// Get the ID for the most logical result
 		this.bestID = determineBestID();
 		
+		// Get the list of definitions if the best result is definitions
 		this.definitions = bestID.equals("Definition:WordData") ? formatDefinitions() : null;
 		
-		this.bestResult = determineBestResult();
+		// Format the best result
+		this.bestResult = formatBestResult();
 		
+		// Create the map of other pod IDs (simpleID:complexID)
 		this.otherPodIDMap = getOtherPodIDs();
 		
 		try
@@ -82,6 +87,10 @@ public class WolframQuery
 		catch (UnsupportedEncodingException e) { }
 	}
 	
+	/**
+	 * Formats the {@link WAQueryResult} into a {@link LinkedHashMap}
+	 * @return The formatted {@link LinkedHashMap}
+	 */
 	private LinkedHashMap<String, String> formatResult()
 	{
 		LinkedHashMap<String, String> podMap = new LinkedHashMap<>();
@@ -105,6 +114,13 @@ public class WolframQuery
 		return podMap;
 	}
 	
+	/**
+	 * Formats the <code>WASubpod</code> data to a String<br>
+	 * Used in {@link #formatResult()}
+	 * @param curSub The <code>WASubpod</code> to format
+	 * @return A String representation of the <code>WASubpod</code>
+	 * @see WASubpod
+	 */
 	private String getSubPodData(WASubpod curSub)
 	{
 		String subData = "";
@@ -114,6 +130,11 @@ public class WolframQuery
 		return subData.trim().replace("\n", "; ");
 	}
 	
+	/**
+	 * Builds a map of other {@link WAPod} IDs<br>
+	 * Other pods are all pods except <code>Input</code> and <code>bestID</code>
+	 * @return A {@link LinkedHashMap} of {@link WAPod} IDs in format <code>{simpleID:complexID}</code>
+	 */
 	private LinkedHashMap<String, String> getOtherPodIDs()
 	{
 		List<String> allPodIDs = new ArrayList<>(fullPodMap.keySet());
@@ -129,6 +150,10 @@ public class WolframQuery
 		return idMap;
 	}
 	
+	/**
+	 * Determines which {@link WAPod} ID is the most logical result for the query
+	 * @return The <code>bestID</code>
+	 */
 	private String determineBestID()
 	{
 		String best = "";
@@ -142,7 +167,11 @@ public class WolframQuery
 		return best;
 	}
 	
-	private String determineBestResult()
+	/**
+	 * Formats the best result
+	 * @return A String representation of the best result
+	 */
+	private String formatBestResult()
 	{
 		if (bestID.isEmpty())
 			return "No best result.";
@@ -152,6 +181,10 @@ public class WolframQuery
 			return fullPodMap.get(bestID);
 	}
 	
+	/**
+	 * Formats the definitions result into a List of definitions
+	 * @return A List of all definitions
+	 */
 	private List<String> formatDefinitions()
 	{
 		List<String> defsList = new ArrayList<>();
@@ -169,12 +202,10 @@ public class WolframQuery
 		return defsList;
 	}
 	
-	public String getOtherResult(String simpleID)
-	{
-		String complexID = otherPodIDMap.get(simpleID.toLowerCase());
-		return fullPodMap.get(complexID);
-	}
-	
+	/**
+	 * Gets a List of IDs in <code>otherPodIDMap</code>
+	 * @return A List of other {@link WAPod} IDs
+	 */
 	public List<String> getOtherIDs()
 	{
 		List<String> otherPodIDs = new ArrayList<>();
@@ -185,6 +216,22 @@ public class WolframQuery
 		return otherPodIDs;
 	}
 	
+	/**
+	 * Gets a different result type from its <code>simpleID</code>
+	 * @param simpleID The simplified ID of the result
+	 * @return The other result
+	 */
+	public String getOtherResult(String simpleID)
+	{
+		String complexID = otherPodIDMap.get(simpleID.toLowerCase());
+		return complexID.split(":")[0] + ": " + fullPodMap.get(complexID);
+	}
+	
+	/**
+	 * Gets a different definition than the first one
+	 * @param num The definition number. <code>0 < num <= defintions.size()</code>
+	 * @return The different definition
+	 */
 	public String getOtherDefinition(int num)
 	{
 		if (definitions == null)
