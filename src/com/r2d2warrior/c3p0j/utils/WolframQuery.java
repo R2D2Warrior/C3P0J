@@ -3,9 +3,8 @@ package com.r2d2warrior.c3p0j.utils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,101 +22,174 @@ import com.wolfram.alpha.WASubpod;
 public class WolframQuery
 {
 	private String appID;
-	private WAEngine engine;
-	private WAQuery query;
-	private WAQueryResult queryResult;
+	private WAEngine waEngine;
+	private WAQuery waQuery;
+	private WAQueryResult waQueryResult;
 	@Getter
-	private Map<String, List<String>> podData;
+	private LinkedHashMap<String, String> fullPodMap;
 	@Getter
 	private String inputInterpretation;
 	@Getter
-	private String result;
-	@Getter
-	private List<String> otherPods;
+	private String bestResult;
 	@Getter
 	private String basicURL;
+	@Getter
+	private LinkedHashMap<String, String> otherPodIDMap;
+	@Getter
+	private String bestID;
+	private List<String> definitions;
 	
 	public WolframQuery(String query) throws WAException
 	{
-		this.engine = new WAEngine();
-		this.appID = new Config("config.json").getMap().get("api").get("wolfram");
+		// Create the engine and appID
+		this.waEngine = new WAEngine();
+		this.appID = "33EPX9-V4HRW2RL76";
 		
-		this.engine.setAppID(appID);
-		this.engine.addFormat("plaintext");
+		// Apply the appID and add plaintext format
+		this.waEngine.setAppID(appID);
+		this.waEngine.addFormat("plaintext");
 		
-		this.query = engine.createQuery();
-		this.query.setInput(query);
+		// Prepare the query with the input
+		this.waQuery = waEngine.createQuery();
+		this.waQuery.setInput(query);
 		
-		this.queryResult = engine.performQuery(this.query);
+		// Execute the query
+		this.waQueryResult = waEngine.performQuery(this.waQuery);
 		
-		if (queryResult.isError() || !queryResult.isSuccess() || queryResult.getPods().length == 0)
-			throw new WAException("Query failed: " + engine.toURL(this.query));
+		// Check for problems
+		if (waQueryResult.isError() || !waQueryResult.isSuccess() || waQueryResult.getPods().length == 0)
+			throw new WAException("Query failed: " + waEngine.toURL(this.waQuery));
 		
-		this.podData = formatResult();
+		// Create the tidy pod map
+		this.fullPodMap = formatResult();
 		
-		this.inputInterpretation = StringUtils.join(podData.get("Input"), " ").trim().replaceAll(" +", " ");
-	
-		sortResults();
+		// Get the input interpretation
+		this.inputInterpretation = fullPodMap.get("Input").trim().replaceAll(" +", " ");
+		
+		this.bestID = determineBestID();
+		
+		this.definitions = bestID.equals("Definition:WordData") ? formatDefinitions() : null;
+		
+		this.bestResult = determineBestResult();
+		
+		this.otherPodIDMap = getOtherPodIDs();
 		
 		try
 		{
+			// Try to create a URL from the query
 			this.basicURL = "http://www.wolframalpha.com/input/?i=" + URLEncoder.encode(query, "UTF-8");
 		}
-		catch (UnsupportedEncodingException e)
-		{
-			this.basicURL = "";
-			e.printStackTrace();
-		}
+		catch (UnsupportedEncodingException e) { }
 	}
 	
-	private Map<String, List<String>> formatResult()
+	private LinkedHashMap<String, String> formatResult()
 	{
-		/* String[] goodPods = {"Input", "Result", "DecimalApproximation", "NumberName","Definition:WordData",
-		"UnitConversion", "AdditionalConversions", "DifferenceConversions"};*/
-		Map<String, List<String>> podMap = new HashMap<>();
-		for (WAPod curPod : queryResult.getPods())
+		LinkedHashMap<String, String> podMap = new LinkedHashMap<>();
+		
+		// Start pod parsing
+		for (WAPod curPod : waQueryResult.getPods())
 		{
 			if (curPod.isError())
 				continue;
+
+			// Start subpod parsing
 			List<String> subList = new ArrayList<>();
 			for (WASubpod curSub : curPod.getSubpods())
 			{
-				String subData = "";
-				for (Object element : curSub.getContents())
-					if (element instanceof WAPlainText)
-						subData += ((WAPlainText) element).getText().trim() + " ";
-				subList.add(subData.replace("\n", "").trim());
+				subList.add(
+						getSubPodData(curSub)
+						);
 			}
-			podMap.put(curPod.getID(), subList);
+			podMap.put(curPod.getID(), StringUtils.join(subList, "; "));
 		}
 		return podMap;
 	}
 	
-	private void sortResults()
+	private String getSubPodData(WASubpod curSub)
 	{
-		Set<String> keys = podData.keySet();
-		String bestKey = "";
-		if (keys.contains("Result"))
-			bestKey = "Result";
-		else if (keys.contains("DecimalApproximation"))
-			bestKey = "DecimalApproximation";
-		else if (keys.contains("Definition:WordData"))
-			bestKey = "Definition:WordData";
-		
-		this.result = bestKey.isEmpty() ? "No best result." : StringUtils.join(podData.get(bestKey), "; ");
-		
-		this.otherPods = getOtherPods(bestKey);
+		String subData = "";
+		for (Object element : curSub.getContents())
+			if (element instanceof WAPlainText)
+				subData += " " + ((WAPlainText) element).getText().trim();
+		return subData.trim().replace("\n", "; ");
 	}
 	
-	private List<String> getOtherPods(String bestKey)
+	private LinkedHashMap<String, String> getOtherPodIDs()
 	{
-		List<String> others = new ArrayList<>();
-		for (WAPod curPod : queryResult.getPods())
+		List<String> allPodIDs = new ArrayList<>(fullPodMap.keySet());
+		allPodIDs.remove("Input");
+		allPodIDs.remove(bestID);
+		
+		LinkedHashMap<String, String> idMap = new LinkedHashMap<>();
+		for (String podID : allPodIDs)
 		{
-			String id = curPod.getID();
-			if (!id.equals("Input") && !id.equals(bestKey))
-				others.add(id);
+			String simpleID = podID.split(":")[0].toLowerCase();
+			idMap.put(simpleID, podID);
 		}
-		return others;
+		return idMap;
+	}
+	
+	private String determineBestID()
+	{
+		String best = "";
+		Set<String> keys = fullPodMap.keySet();
+		if (keys.contains("Result"))
+			best = "Result";
+		else if (keys.contains("DecimalApproximation"))
+			best = "DecimalApproximation";
+		else if (keys.contains("Definition:WordData"))
+			best = "Definition:WordData";
+		return best;
+	}
+	
+	private String determineBestResult()
+	{
+		if (bestID.isEmpty())
+			return "No best result.";
+		else if (bestID.equals("Definition:WordData"))
+			return definitions.get(0) + " [+" + (definitions.size()-1) + " more]";
+		else
+			return fullPodMap.get(bestID);
+	}
+	
+	private List<String> formatDefinitions()
+	{
+		List<String> defsList = new ArrayList<>();
+		String[] defsSplit = fullPodMap.get(bestID).trim().split(";\\s\\d\\s\\|\\s");
+		for (int x = 0; x < defsSplit.length; x++)
+		{
+			String[] curDefSplit = defsSplit[x].split("\\s\\|\\s");
+			
+			int wordTypeIndex = (x == 0) ? 1 : 0;
+			int defIndex = (x == 0) ? 2 : 1;
+			
+			String def = String.format("Def #%d - (%s) %s", x+1, curDefSplit[wordTypeIndex], curDefSplit[defIndex]);
+			defsList.add(def);
+		}
+		return defsList;
+	}
+	
+	public String getOtherResult(String simpleID)
+	{
+		String complexID = otherPodIDMap.get(simpleID.toLowerCase());
+		return fullPodMap.get(complexID);
+	}
+	
+	public List<String> getOtherIDs()
+	{
+		List<String> otherPodIDs = new ArrayList<>();
+		for (String podID : new ArrayList<>(otherPodIDMap.values()))
+		{
+			otherPodIDs.add(podID.split(":")[0]);
+		}
+		return otherPodIDs;
+	}
+	
+	public String getOtherDefinition(int num)
+	{
+		if (definitions == null)
+			return null;
+		else
+			return definitions.get(num-1);
 	}
 }
