@@ -40,7 +40,7 @@ public class WebUtils
 		if (encodeInput)
 			input = URLEncoder.encode(input, "UTF-8");
 		String fullUrl = String.format(formattedUrl, input);
-		System.out.println(fullUrl);
+		//System.out.println(fullUrl);
 		HttpURLConnection conn = (HttpURLConnection) new URL(fullUrl).openConnection();
 		JSONObject json = (JSONObject) PARSER.parse(new InputStreamReader(conn.getInputStream()));
 		return json;
