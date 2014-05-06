@@ -17,7 +17,6 @@ public class Eval extends GenericCommand
 		super(event);
 	}
 	
-	@Override
 	public void execute()
 	{
 		String eval = event.getArguments();

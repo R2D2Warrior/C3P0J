@@ -36,9 +36,4 @@ public abstract class GenericCommand
 		this.userChannelDao = bot.getUserChannelDao();
 		this.info = event.getBot().getCommandRegistry().getCommandInfo(event);
 	}
-	
-	/**
-	 * Executes the command
-	 */
-	public abstract void execute();
 }

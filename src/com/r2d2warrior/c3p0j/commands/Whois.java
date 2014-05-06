@@ -6,7 +6,7 @@ import org.pircbotx.hooks.events.WhoisEvent;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.Utils;
 
-@Command(name="whois", desc="Gets information on a nick without the user of User.class", syntax="whois <nick>", requiresArgs=true)
+@Command(name="whois", desc="Gets information on a nick without the use of  the User class", syntax="whois <nick>", requiresArgs=true)
 public class Whois extends GenericCommand
 {
 	public Whois(CommandEvent<PircBotX> event)
