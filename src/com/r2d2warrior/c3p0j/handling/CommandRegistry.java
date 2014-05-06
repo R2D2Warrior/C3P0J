@@ -1,6 +1,7 @@
 package com.r2d2warrior.c3p0j.handling;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import org.pircbotx.PircBotX;
 import org.reflections.Reflections;
 
 import com.r2d2warrior.c3p0j.commands.Command;
+import com.r2d2warrior.c3p0j.commands.Commands;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
 import com.r2d2warrior.c3p0j.utils.Utils;
 
@@ -23,26 +25,35 @@ public class CommandRegistry<T extends GenericCommand>
 	{
 		this.bot = bot;
 		this.commands = new HashSet<CommandInfo<T>>();
-		parseAnnotations();
-	}
-	
-	private void parseAnnotations()
-	{
-		Reflections reflections = new Reflections(Utils.getPackageName(Command.class));
-		Command cmd;
-		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
+		try
 		{
-			cmd = cls.getAnnotation(Command.class);
-			commands.add(new CommandInfo<T>(cmd.name(), cmd.alt(), cmd.desc(),
-					cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(), cls));
+			parseAnnotations();
+		}
+		catch (ReflectiveOperationException e)
+		{
+			e.printStackTrace();
 		}
 	}
 	
-	//TODO Figure out how to refresh command changes. This method only works for adding/removing them
-	public void refresh()
+	private void parseAnnotations() throws ReflectiveOperationException
 	{
-		commands = new HashSet<>();
-		parseAnnotations();
+		Reflections reflections = new Reflections(Utils.getPackageName(Command.class));
+		for (Class<?> cls : reflections.getTypesAnnotatedWith(Commands.class))
+		{
+			Commands cmds = cls.getAnnotation(Commands.class);
+			for (Command cmd : cmds.value())
+				commands.add(new CommandInfo<T>(cmd.name(), cmd.alt(), cmd.desc(),
+						cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(),
+						cls.getDeclaredMethod(cmd.method()), cls));
+		}
+		
+		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
+		{
+			Command cmd = cls.getAnnotation(Command.class);
+			commands.add(new CommandInfo<T>(cmd.name(), cmd.alt(), cmd.desc(),
+					cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(),
+					cls.getDeclaredMethod(cmd.method()), cls));
+		}
 	}
 	
 	public String executeCommand(CommandEvent<PircBotX> event)
@@ -56,7 +67,7 @@ public class CommandRegistry<T extends GenericCommand>
 			return "";
 		
 		Class<T> cls = getCommandClass(event.getCommandName());
-		CommandInfo<T> info = getCommandInfo(cls);
+		CommandInfo<T> info = getCommandInfo(event.getCommandName());
 		
 		if (info.isAdminOnly() && !event.getUser().isAdmin())
 			return noPermissionError;
@@ -68,7 +79,9 @@ public class CommandRegistry<T extends GenericCommand>
 		{
 			Constructor<T> constuct = cls.getConstructor(CommandEvent.class);
 			constuct.setAccessible(true);
-			constuct.newInstance(event).execute();
+			Method method = info.getExecuteMethod();
+			method.setAccessible(true);
+			method.invoke(constuct.newInstance(event));
 		}
 		//TODO Throw all exceptions during command execution to execute() to be caught here
 		catch (ReflectiveOperationException e)
@@ -97,18 +110,13 @@ public class CommandRegistry<T extends GenericCommand>
 		return null;
 	}
 	
-	public CommandInfo<T> getCommandInfo(Class<T> cls)
-	{
-		for (CommandInfo<T> info : commands)
-			if (info.getCommandClass().equals(cls))
-				return info;
-		
-		return null;
-	}
-	
 	public CommandInfo<T> getCommandInfo(String name)
 	{
-		return getCommandInfo(getCommandClass(name));
+		for (CommandInfo<T> info : commands)
+			if (info.getName().equals(name) || (info.hasAlt() && info.getAlt().equals(name)))
+				return info;
+		
+		return null;	
 	}
 	
 	public CommandInfo<T> getCommandInfo(CommandEvent<PircBotX> event)
