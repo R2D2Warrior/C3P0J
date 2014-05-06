@@ -1,6 +1,7 @@
 src/old/
 .backup/
-config.json
+*.json
+*.db
 lib/WolframAlphaJavaLibrary/
 
 #################

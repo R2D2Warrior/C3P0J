@@ -26,8 +26,9 @@ public class FactoidListener extends ListenerAdapter<PircBotX>
 	
 	public void onFactoid(FactoidEvent<PircBotX> event)
 	{
+		FactoidManager factoidManager = event.getBot().getFactoidManager();
 		String name = event.getFactoidName();
-		if (FactoidManager.factoidExists(name))
-			event.respond(FactoidManager.getFactoidData(name));
+		if (factoidManager.factoidExists(name))
+			event.respond(factoidManager.getFactoidData(name));
 	}
 }

@@ -1,5 +1,7 @@
 package com.r2d2warrior.c3p0j.commands;
 
+import java.sql.SQLException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.PircBotX;
 
@@ -17,30 +19,50 @@ public class FactoidCommands extends GenericCommand
 	
 	public void remember()
 	{
+		FactoidManager factoidManager = bot.getFactoidManager();
+
 		String factoid = event.getArgumentList().get(0);
 		String data = event.getArgRange(1);
 		
-		if (!FactoidManager.factoidExists(factoid) && StringUtils.isNotBlank(data))
-		{	
-			FactoidManager.addFactoid(factoid, data);
-			event.respond("Saved factoid: " + factoid);
+		try
+		{
+			if (!factoidManager.factoidExists(factoid) && StringUtils.isNotBlank(data))
+			{	
+				factoidManager.addFactoid(factoid, data);
+				event.respond("Saved factoid: " + factoid);
+			}
+			else if (factoidManager.factoidExists(factoid))
+				event.respondToUser("Error: Factoid \"" + factoid + "\" already exists.");
+			else
+				event.respondToUser("Error: Nothing to save.");
 		}
-		else if (FactoidManager.factoidExists(factoid))
-			event.respondToUser("Error: Factoid \"" + factoid + "\" already exists.");
-		else
-			event.respondToUser("Error: Nothing to save.");
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			event.respondToUser("An SQL error occurred while adding factoid.");
+		}
 	}
 	
 	public void forget()
 	{
+		FactoidManager factoidManager = bot.getFactoidManager();
+		
 		String factoid = event.getArgumentList().get(0);
 		
-		if (FactoidManager.factoidExists(factoid))
+		try
 		{
-			FactoidManager.removeFactoid(factoid);
-			event.respond("Removed factoid: " + factoid);
+			if (factoidManager.factoidExists(factoid))
+			{
+				factoidManager.removeFactoid(factoid);
+				event.respond("Removed factoid: " + factoid);
+			}
+			else
+				event.respondToUser("Error: Factoid \"" + factoid + "\" doesn't exist.");
 		}
-		else
-			event.respondToUser("Error: Factoid \"" + factoid + "\" doesn't exist.");
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			event.respondToUser("An SQL error occurred while adding factoid.");
+		}
 	}
 }
