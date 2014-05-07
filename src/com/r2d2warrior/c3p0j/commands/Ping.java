@@ -2,11 +2,10 @@ package com.r2d2warrior.c3p0j.commands;
 
 import org.pircbotx.PircBotX;
 
+import com.r2d2warrior.c3p0j.commands.Command.Sub;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-//Testing command for CommandEvent.completeNick(...)
 @Command(name="ping", desc="Sends a PONG")
-@Command(name="ping2", method="execute2")
 public class Ping extends GenericCommand
 {
 	public Ping(CommandEvent<PircBotX> event)
@@ -14,7 +13,8 @@ public class Ping extends GenericCommand
 		super(event);
 	}
 	
-	public void execute()
+	@Sub(name="sub1")
+	public void execute1()
 	{
 		if (event.hasNoArgs())
 		{
@@ -27,6 +27,7 @@ public class Ping extends GenericCommand
 		}
 	}
 	
+	@Sub(name="sub2")
 	public void execute2()
 	{
 		if (event.hasNoArgs())

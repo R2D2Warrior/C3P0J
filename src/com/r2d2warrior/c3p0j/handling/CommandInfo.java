@@ -1,6 +1,7 @@
 package com.r2d2warrior.c3p0j.handling;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,11 +26,13 @@ public class CommandInfo<T extends GenericCommand>
 	@Getter(AccessLevel.NONE)
 	private boolean requiresArgs;
 	private Method executeMethod;
+	private HashMap<String, Method> subCommands;
 	private Class<T> commandClass;
 	
 	@SuppressWarnings("unchecked")
 	public CommandInfo(String name, String alt, String desc, String syntax,
-			boolean adminOnly, boolean requiresArgs, Method executeMethod, Class<?> commandClass)
+			boolean adminOnly, boolean requiresArgs, Method executeMethod,
+			HashMap<String, Method> subCommands, Class<? extends GenericCommand> commandClass)
 	{
 		this.name = name;
 		this.alt = alt;
@@ -38,6 +41,7 @@ public class CommandInfo<T extends GenericCommand>
 		this.isAdminOnly = adminOnly;
 		this.requiresArgs = requiresArgs;
 		this.executeMethod = executeMethod;
+		this.subCommands = subCommands;
 		this.commandClass = (Class<T>)commandClass;
 	}
 	

@@ -25,4 +25,11 @@ public @interface Command
 	boolean requiresArgs() default false;
 	/** If the command requires admin status to use. Default <code>false</code>*/
 	boolean adminOnly() default false;
+	
+	public @interface Sub
+	{
+		String name();
+		boolean requiresArgs() default false;
+		boolean adminOnly() default false;
+	}
 }

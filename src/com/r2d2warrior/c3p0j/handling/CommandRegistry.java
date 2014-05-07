@@ -2,6 +2,7 @@ package com.r2d2warrior.c3p0j.handling;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,25 +38,51 @@ public class CommandRegistry<T extends GenericCommand>
 	
 	private void parseAnnotations() throws ReflectiveOperationException
 	{
-		Reflections reflections = new Reflections(Utils.getPackageName(Command.class));
-		for (Class<?> cls : reflections.getTypesAnnotatedWith(Commands.class))
-		{
-			Commands cmds = cls.getAnnotation(Commands.class);
-			for (Command cmd : cmds.value())
-				commands.add(new CommandInfo<T>(cmd.name(), cmd.alt(), cmd.desc(),
-						cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(),
-						cls.getDeclaredMethod(cmd.method()), cls));
-		}
+		Reflections reflections = new Reflections(Utils.getPackageName(GenericCommand.class));
+		Set<Class<? extends GenericCommand>> commandClasses = reflections.getSubTypesOf(GenericCommand.class);
 		
-		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
+		for (Class<? extends GenericCommand> cls : commandClasses)
 		{
-			Command cmd = cls.getAnnotation(Command.class);
-			commands.add(new CommandInfo<T>(cmd.name(), cmd.alt(), cmd.desc(),
-					cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(),
-					cls.getDeclaredMethod(cmd.method()), cls));
+			if (cls.isAnnotationPresent(Command.class))
+			{
+				Command cmd = cls.getAnnotation(Command.class);
+				Reflections classRefs = new Reflections(cls);
+				
+				HashMap<String, Method> methodMap = new HashMap<>();
+				if (classRefs.getMethodsAnnotatedWith(Command.Sub.class).size() > 0)
+					methodMap = processMethods(cls);
+
+				commands.add(new CommandInfo<T>(
+						cmd.name(), cmd.alt(), cmd.desc(),
+						cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(),
+						cls.getDeclaredMethod(cmd.method()), methodMap, cls)
+						);
+			}
+			else if (cls.isAnnotationPresent(Commands.class))
+			{
+				for (Command cmd : cls.getAnnotation(Commands.class).value())
+					commands.add(new CommandInfo<T>(
+							cmd.name(), cmd.alt(), cmd.desc(),
+							cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(),
+							cls.getDeclaredMethod(cmd.method()),
+							new HashMap<String, Method>(), cls)
+							);
+			}
 		}
 	}
 	
+	private HashMap<String, Method> processMethods(Class<? extends GenericCommand> cls)
+	{
+		Reflections classRefs = new Reflections(cls);
+		HashMap<String, Method> map = new HashMap<>();
+		for (Method method : classRefs.getMethodsAnnotatedWith(Command.Sub.class))
+		{
+			String name = method.getAnnotation(Command.Sub.class).name();
+			map.put(name.toLowerCase(), method);
+		}
+		return map;
+	}
+		
 	public String executeCommand(CommandEvent<PircBotX> event)
 	{
 		String noPermissionError = "You don't have permission to use that command.";
