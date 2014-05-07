@@ -9,10 +9,7 @@ import org.pircbotx.PircBotX;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.handling.FactoidManager;
 
-//TODO sub-commands for this? .factoids add, .factoid del, .factoids list, etc
-@Command(name="remember", alt="r", desc="Saves, or \"remembers\", a factoid. Call with ?<factoidName>", syntax="remember <name> <data>", method="remember", requiresArgs=true, adminOnly=true)
-@Command(name="forget", alt="f", desc="Removes, or \"forgets\", a factoid", syntax="forget <factoidName>", method="forget", requiresArgs=true, adminOnly=true)
-@Command(name="factoids", desc="Lists all factoids.", method="list")
+@Command(name="factoids", desc="Factoid management command.", syntax="factoids <add|del|list> [factoid] [data]")
 public class FactoidCommands extends GenericCommand
 {
 	public FactoidCommands(CommandEvent<PircBotX> event)
@@ -20,6 +17,13 @@ public class FactoidCommands extends GenericCommand
 		super(event);
 	}
 	
+	@Command.Default
+	public void info()
+	{
+		event.respondToUser("SYNTAX: " + event.getCommandInfo().getSyntax());
+	}
+	
+	@Command.Sub(name="add", adminOnly=true, requiresArgs=true)
 	public void remember()
 	{
 		FactoidManager factoidManager = bot.getFactoidManager();
@@ -46,6 +50,7 @@ public class FactoidCommands extends GenericCommand
 		}
 	}
 	
+	@Command.Sub(name="del", adminOnly=true, requiresArgs=true)
 	public void forget()
 	{
 		FactoidManager factoidManager = bot.getFactoidManager();
@@ -69,6 +74,7 @@ public class FactoidCommands extends GenericCommand
 		}
 	}
 	
+	@Command.Sub(name="list")
 	public void list()
 	{
 		FactoidManager factoidManager = bot.getFactoidManager();
