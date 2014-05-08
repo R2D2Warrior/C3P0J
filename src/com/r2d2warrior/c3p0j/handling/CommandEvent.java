@@ -5,8 +5,10 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrTokenizer;
@@ -28,6 +30,7 @@ public class CommandEvent<T extends PircBotX> extends Event<T> implements Generi
 	protected String message;
 	protected String prefix;
 	protected String commandName;
+	@Setter(AccessLevel.PROTECTED) // Setter used in CommandRegistry to alter arguments for subcommands
 	protected String arguments;
 	protected CommandInfo<GenericCommand> commandInfo;
 	

@@ -19,10 +19,21 @@ public @interface Command
 	String desc() default "";
 	/** Required: {@code<arg>}, Optional: [arg]*/
 	String syntax() default "";
-	/** The name of the method to use for command execution. Default <code>execute()</code>*/
-	String method() default "execute";
 	/** If the command requires any arguments or not. Default <code>false</code>*/
 	boolean requiresArgs() default false;
 	/** If the command requires admin status to use. Default <code>false</code>*/
 	boolean adminOnly() default false;
+	
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface Sub
+	{
+		String name();
+		boolean requiresArgs() default false;
+		boolean adminOnly() default false;
+	}
+	
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface Default {}
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -46,8 +47,10 @@ public class FactoidManager
 		
 		refreshConnection();
 		
-		String insert = String.format("INSERT INTO factoids VALUES ('%s', '%s');", name, data);
-		conn.createStatement().execute(insert);
+		PreparedStatement prep = conn.prepareStatement("INSERT INTO factoids VALUES (?, ?);");
+		prep.setString(1, name);
+		prep.setString(2, data);
+		prep.execute();
 	}
 	
 	public void removeFactoid(String name) throws SQLException

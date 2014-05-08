@@ -2,6 +2,7 @@ package com.r2d2warrior.c3p0j.handling;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,9 +12,9 @@ import org.pircbotx.PircBotX;
 import org.reflections.Reflections;
 
 import com.r2d2warrior.c3p0j.commands.Command;
-import com.r2d2warrior.c3p0j.commands.Commands;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
 import com.r2d2warrior.c3p0j.utils.Utils;
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
 public class CommandRegistry<T extends GenericCommand>
 {
@@ -37,25 +38,49 @@ public class CommandRegistry<T extends GenericCommand>
 	
 	private void parseAnnotations() throws ReflectiveOperationException
 	{
-		Reflections reflections = new Reflections(Utils.getPackageName(Command.class));
-		for (Class<?> cls : reflections.getTypesAnnotatedWith(Commands.class))
-		{
-			Commands cmds = cls.getAnnotation(Commands.class);
-			for (Command cmd : cmds.value())
-				commands.add(new CommandInfo<T>(cmd.name(), cmd.alt(), cmd.desc(),
-						cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(),
-						cls.getDeclaredMethod(cmd.method()), cls));
-		}
+		Reflections reflections = new Reflections(Utils.getPackageName(GenericCommand.class));
 		
-		for (Class<?> cls : reflections.getTypesAnnotatedWith(Command.class))
+		for (Class<? extends GenericCommand> cls : reflections.getSubTypesOf(GenericCommand.class))
 		{
-			Command cmd = cls.getAnnotation(Command.class);
-			commands.add(new CommandInfo<T>(cmd.name(), cmd.alt(), cmd.desc(),
-					cmd.syntax(), cmd.adminOnly(), cmd.requiresArgs(),
-					cls.getDeclaredMethod(cmd.method()), cls));
+			if (cls.isAnnotationPresent(Command.class))
+			{
+				Command cmd = cls.getAnnotation(Command.class);
+				
+				HashMap<String, Method> methodMap = new HashMap<>();
+				methodMap = processMethods(cls);
+
+				commands.add(new CommandInfo<T>(
+						cmd.name(), cmd.alt(), cmd.desc(), cmd.syntax(),
+						cmd.adminOnly(), cmd.requiresArgs(), methodMap, cls)
+						);
+			}
 		}
 	}
 	
+	private HashMap<String, Method> processMethods(Class<? extends GenericCommand> cls) throws ReflectiveOperationException
+	{
+		HashMap<String, Method> map = new HashMap<>();
+		for (Method method : cls.getMethods())
+		{
+			if (method.isAnnotationPresent(Command.Sub.class))
+			{
+				String name = method.getAnnotation(Command.Sub.class).name();
+				map.put(name.toLowerCase(), method);
+			}
+			else if (method.isAnnotationPresent(Command.Default.class))
+			{
+				if (map.containsKey("DEFAULT"))
+					throw new IllegalAnnotationException("Only one @Command.Default annotation is allowed per class.\n"
+														+ "Using first method annotated with @Command.Default.");
+				else
+					map.put("DEFAULT", method);
+			}
+		}
+		if (!map.containsKey("DEFAULT"))
+			map.put("DEFAULT", cls.getMethod("execute"));
+		return map;
+	}
+		
 	public String executeCommand(CommandEvent<PircBotX> event)
 	{
 		String noPermissionError = "You don't have permission to use that command.";
@@ -75,11 +100,26 @@ public class CommandRegistry<T extends GenericCommand>
 		if (info.requiresArgs() && event.hasNoArgs())
 			return needsArgsError + info.getSyntax();
 		
+		Method method = info.getMethods().get("DEFAULT");
+		if (info.hasSubCommands() && !event.hasNoArgs())
+		{
+			String possibleSub = event.getArgumentList().get(0);
+			if (info.getMethods().containsKey(possibleSub))
+			{
+				event.setArguments(event.getArgRange(1));
+				method = info.getMethods().get(possibleSub);
+				
+				if (info.getSub(possibleSub).isAdminOnly() && !event.getUser().isAdmin())
+					return noPermissionError;
+				if (info.getSub(possibleSub).requiresArgs() && event.hasNoArgs())
+					return needsArgsError.replace("command", "subcommand") + info.getSyntax();
+			}
+		}
+			
 		try
 		{
 			Constructor<T> constuct = cls.getConstructor(CommandEvent.class);
 			constuct.setAccessible(true);
-			Method method = info.getExecuteMethod();
 			method.setAccessible(true);
 			method.invoke(constuct.newInstance(event));
 		}
