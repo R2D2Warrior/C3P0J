@@ -1,0 +1,32 @@
+*** REMOVE THIS LINE AND RENAME FILE TO "config.json" FOR THIS FILE TO BE USED BY THE BOT ***
+{
+  "server":{
+    "blockedChannels":[
+      "#help",
+      "#lobby"
+    ],
+    "realName":"real name",
+    "serverHostname":"irc.esper.net",
+    "autoNickChange":true,
+    "nickservPassword":"password123",
+    "name":"PircBotX",
+    "channelPrefixes":"#",
+    "login":"Bot",
+    "autoJoinChannels":[
+      "#PircBotX",
+      "#bots"
+    ],
+    "capEnabled":true
+  },
+  "bot":{
+    "prefixes":{
+      "@":"NOTICE",
+      ".":"MESSAGE"
+    },
+    "adminAccounts":[
+      "R2D2Warrior",
+      "CHCMATT"
+    ],
+    "factoidPrefix":"?"
+  }
+}

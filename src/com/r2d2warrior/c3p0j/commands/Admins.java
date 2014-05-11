@@ -9,6 +9,7 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
+import com.r2d2warrior.c3p0j.utils.Config;
 
 @Command(name="admins", desc="Lists bot admin accounts")
 public class Admins extends GenericCommand
@@ -19,7 +20,9 @@ public class Admins extends GenericCommand
 		super(event);
 	}
 	
-	public void execute()
+	@Command.Default
+	@Command.Sub(name="list")
+	public void list()
 	{
 		List<String> onlineAdmins = new ArrayList<>();
 		List<String> offlineAdmins = new ArrayList<>(config.getAdminAccounts());
@@ -36,5 +39,23 @@ public class Admins extends GenericCommand
 		event.respond(
 				"Online: " + Colors.setColor(StringUtils.join(onlineAdmins, ", "), Colors.GREEN + Colors.BOLD) +
 				" | Offline: " + Colors.setColor(StringUtils.join(offlineAdmins, " ,"), Colors.RED + Colors.BOLD));
+	}
+	
+	@Command.Sub(name="add", requiresArgs=true, adminOnly=true)
+	public void add()
+	{
+		Config c = new Config("config.json");
+		c.getStringList("bot", "adminAccounts").addAll(event.getArgumentList());
+		c.update(bot);
+		event.respondToUser("Added admins: " + StringUtils.join(event.getArgumentList(), ", "));
+	}
+	
+	@Command.Sub(name="remove", requiresArgs=true, adminOnly=true)
+	public void remove()
+	{
+		Config c = new Config("config.json");
+		c.getStringList("bot", "adminAccounts").removeAll(event.getArgumentList());
+		c.update(bot);
+		event.respondToUser("Removed admins: " + StringUtils.join(event.getArgumentList(), ", "));
 	}
 }

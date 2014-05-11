@@ -67,7 +67,7 @@ public class CommandRegistry<T extends GenericCommand>
 				String name = method.getAnnotation(Command.Sub.class).name();
 				map.put(name.toLowerCase(), method);
 			}
-			else if (method.isAnnotationPresent(Command.Default.class))
+			if (method.isAnnotationPresent(Command.Default.class))
 			{
 				if (map.containsKey("DEFAULT"))
 					throw new IllegalAnnotationException("Only one @Command.Default annotation is allowed per class.\n"

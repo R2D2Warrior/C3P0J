@@ -17,57 +17,14 @@ public class C3P0J
 	{
 		// TODO Improve config file
 		Config c = new Config("config.json");
-		String password = c.getMap().get("passwords").get("nickserv");
 		
- 		Configuration.Builder<PircBotX> builder = new Configuration.Builder<PircBotX>()
+ 		Configuration.Builder<PircBotX> builder =
+ 				new Configuration.Builder<PircBotX>(c.buildBotConfiguration())
  				
- 				//Login info
-			.setName("C3P0J")
-			.setLogin("R2D2")
-			.setRealName("C3P0J (PircBotX) - by R2D2Warrior")
-			
-				//Booleans
-			.setAutoNickChange(true)
-			.setCapEnabled(true)
-			
-			.addCapHandler(new EnableCapHandler("extended-join", true))
-			.addCapHandler(new EnableCapHandler("account-notify", true))
-			
-				//Command management
-			.addAdminAccounts("R2D2Warrior", "CHCMATT", "Vgr255", "ChasedSpade") // TODO Permissions system
-			.addPrefix(".", "MESSAGE")
-			.addPrefix("@", "NOTICE")
-			.setFactoidPrefix("?")
-			
-				//Server info
-			.setServerHostname("irc.esper.net")
-			.setChannelPrefixes("#")
-			
-			.addAutoJoinChannels("#C3P0")
-			
-			.addBlockedChannels("#help", "#lobby")
-			
-			.setNickservPassword(password);
-			
+ 				.addCapHandler(new EnableCapHandler("extended-join", true))
+ 				.addCapHandler(new EnableCapHandler("account-notify", true));
 
- 		try
- 		{
-			Reflections reflections = new Reflections(Utils.getPackageName(AddListener.class));
-			for (Class<?> cls : reflections.getTypesAnnotatedWith(AddListener.class))
-			{
-				if (cls.getAnnotation(AddListener.class).value())
-				{
-					// TODO Figure out how to avoid this warning: "Unchecked cast from capture#1-of ? to Listener<PircBotX>"
-					@SuppressWarnings("unchecked")
-					Listener<PircBotX> listener = (Listener<PircBotX>) cls.newInstance();
-					builder.addListener(listener);
-				}
-			}
- 		}
- 		catch (ReflectiveOperationException e)
- 		{
- 			e.printStackTrace();
- 		}
+
 
 
         PircBotX bot = new PircBotX(builder.buildConfiguration());
