@@ -3,7 +3,7 @@ package com.r2d2warrior.c3p0j.handling;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.r2d2warrior.c3p0j.commands.Command;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
@@ -21,7 +21,7 @@ import lombok.ToString;
 public class CommandInfo<T extends GenericCommand>
 {
 	private String name;
-	private String alt;
+	private String[] aliases;
 	private String desc;
 	private String syntax;
 	private boolean isAdminOnly;
@@ -31,12 +31,12 @@ public class CommandInfo<T extends GenericCommand>
 	private Class<T> commandClass;
 	
 	@SuppressWarnings("unchecked")
-	public CommandInfo(String name, String alt, String desc, String syntax,
+	public CommandInfo(String name, String[] aliases, String desc, String syntax,
 			boolean adminOnly, boolean requiresArgs, HashMap<String, Method> methods,
 			Class<? extends GenericCommand> commandClass)
 	{
 		this.name = name;
-		this.alt = alt;
+		this.aliases = aliases;
 		this.desc = desc;
 		this.syntax = syntax;
 		this.isAdminOnly = adminOnly;
@@ -50,28 +50,56 @@ public class CommandInfo<T extends GenericCommand>
 		return requiresArgs;
 	}
 	
-	public boolean hasAlt()
-	{
-		return StringUtils.isNotBlank(alt);
-	}
-	
 	public boolean hasSubCommands()
 	{
 		return methods.size() > 1;
 	}
 	
-	protected Sub getSub(String name)
+	public boolean hasSub(String name)
 	{
-		Command.Sub sub = methods.get(name).getAnnotation(Command.Sub.class);
-		return new Sub(sub.adminOnly(), sub.requiresArgs());
+		return getSub(name) != null;
+	}
+	
+	protected HashMap<String, Sub> getSubs()
+	{
+		HashMap<String, Sub> subs = new HashMap<>();
+		for (String key : methods.keySet())
+		{
+			if (!key.equals("DEFAULT"))
+			{
+				Command.Sub sub = methods.get(key).getAnnotation(Command.Sub.class);
+				subs.put(key, new Sub(sub.name(), sub.alias(), sub.adminOnly(), sub.requiresArgs()));
+			}
+		}
+		return subs;
+	}
+	
+	public Sub getSub(String name)
+	{
+		if (name.equals("DEFAULT"))
+			return null;
+		else if (methods.containsKey(name))
+			return getSubs().get(name);
+		else
+		{
+			for (Sub sub : getSubs().values())
+			{
+				if (ArrayUtils.contains(sub.getAliases(), name))
+					return sub;
+			}
+			return null;
+		}
 	}
 	
 	@AllArgsConstructor
 	protected class Sub
 	{
 		@Getter
+		private String name;
+		@Getter
+		private String[] aliases;
+		@Getter
 		private boolean isAdminOnly;
-		@Getter(AccessLevel.NONE)
 		private boolean requiresArgs;
 		
 		public boolean requiresArgs()

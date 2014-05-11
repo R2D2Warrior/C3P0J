@@ -21,7 +21,7 @@ public class Admins extends GenericCommand
 	}
 	
 	@Command.Default
-	@Command.Sub(name="list")
+	@Command.Sub(name="list", alias="l")
 	public void list()
 	{
 		List<String> onlineAdmins = new ArrayList<>();
@@ -50,7 +50,7 @@ public class Admins extends GenericCommand
 		event.respondToUser("Added admins: " + StringUtils.join(event.getArgumentList(), ", "));
 	}
 	
-	@Command.Sub(name="remove", requiresArgs=true, adminOnly=true)
+	@Command.Sub(name="remove", alias={"rem", "del", "delete"}, requiresArgs=true, adminOnly=true)
 	public void remove()
 	{
 		Config c = new Config("config.json");

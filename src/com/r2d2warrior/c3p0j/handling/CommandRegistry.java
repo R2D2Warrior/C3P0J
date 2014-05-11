@@ -8,6 +8,7 @@ import java.util.Set;
 
 import lombok.Getter;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.pircbotx.PircBotX;
 import org.reflections.Reflections;
 
@@ -50,7 +51,7 @@ public class CommandRegistry<T extends GenericCommand>
 				methodMap = processMethods(cls);
 
 				commands.add(new CommandInfo<T>(
-						cmd.name(), cmd.alt(), cmd.desc(), cmd.syntax(),
+						cmd.name(), cmd.alias(), cmd.desc(), cmd.syntax(),
 						cmd.adminOnly(), cmd.requiresArgs(), methodMap, cls)
 						);
 			}
@@ -104,14 +105,15 @@ public class CommandRegistry<T extends GenericCommand>
 		if (info.hasSubCommands() && !event.hasNoArgs())
 		{
 			String possibleSub = event.getArgumentList().get(0);
-			if (info.getMethods().containsKey(possibleSub))
+			if (info.hasSub(possibleSub))
 			{
+				CommandInfo<T>.Sub sub = info.getSub(possibleSub);
 				event.setArguments(event.getArgRange(1));
-				method = info.getMethods().get(possibleSub);
+				method = info.getMethods().get(sub.getName());
 				
-				if (info.getSub(possibleSub).isAdminOnly() && !event.getUser().isAdmin())
+				if (sub.isAdminOnly() && !event.getUser().isAdmin())
 					return noPermissionError;
-				if (info.getSub(possibleSub).requiresArgs() && event.hasNoArgs())
+				if (sub.requiresArgs() && event.hasNoArgs())
 					return needsArgsError.replace("command", "subcommand") + info.getSyntax();
 			}
 		}
@@ -135,7 +137,7 @@ public class CommandRegistry<T extends GenericCommand>
 	public Class<T> getCommandClass(String name)
 	{
 		for (CommandInfo<T> info : commands)
-			if (info.getName().equals(name) || (info.hasAlt() && info.getAlt().equals(name)))
+			if (info.getName().equals(name) || (ArrayUtils.contains(info.getAliases(), name)))
 				return info.getCommandClass();
 		
 		return null;
@@ -153,7 +155,7 @@ public class CommandRegistry<T extends GenericCommand>
 	public CommandInfo<T> getCommandInfo(String name)
 	{
 		for (CommandInfo<T> info : commands)
-			if (info.getName().equals(name) || (info.hasAlt() && info.getAlt().equals(name)))
+			if (info.getName().equals(name) || (ArrayUtils.contains(info.getAliases(), name)))
 				return info;
 		
 		return null;	

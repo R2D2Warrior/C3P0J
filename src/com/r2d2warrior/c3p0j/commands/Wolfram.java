@@ -15,7 +15,7 @@ import com.r2d2warrior.c3p0j.utils.WebUtils;
 import com.r2d2warrior.c3p0j.utils.WolframQuery;
 import com.wolfram.alpha.WAException;
 
-@Command(name="wolfram", alt="wa", desc="Queries Wolfram|Alpha and formats results.", syntax="wolfram <input>", requiresArgs=true)
+@Command(name="wolfram", alias="wa", desc="Queries Wolfram|Alpha and formats results.", syntax="wolfram <input>", requiresArgs=true)
 public class Wolfram extends GenericCommand
 {
 	

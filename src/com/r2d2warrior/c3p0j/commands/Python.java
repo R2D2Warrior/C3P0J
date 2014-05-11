@@ -7,7 +7,7 @@ import org.pircbotx.PircBotX;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.WebUtils;
 
-@Command(name="python", alt="py", requiresArgs=true)
+@Command(name="python", alias="py", requiresArgs=true)
 public class Python extends GenericCommand
 {
 	

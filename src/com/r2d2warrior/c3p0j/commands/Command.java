@@ -14,7 +14,7 @@ public @interface Command
 	/** The name of the command*/
 	String name();
 	/** An alternate name for the command*/
-	String alt() default "";
+	String[] alias() default {};
 	/** The command's description*/
 	String desc() default "";
 	/** Required: {@code<arg>}, Optional: [arg]*/
@@ -29,6 +29,7 @@ public @interface Command
 	public @interface Sub
 	{
 		String name();
+		String[] alias() default {};
 		boolean requiresArgs() default false;
 		boolean adminOnly() default false;
 	}
