@@ -78,7 +78,16 @@ public class CommandRegistry<T extends GenericCommand>
 			}
 		}
 		if (!map.containsKey("DEFAULT"))
-			map.put("DEFAULT", cls.getMethod("execute"));
+		{
+			try
+			{
+				map.put("DEFAULT", cls.getMethod("execute"));
+			}
+			catch (NoSuchMethodException e)
+			{
+				throw new IllegalArgumentException("Command class " + cls.getCanonicalName() + " has no default method.\nSpecify an execute() method or use @Command.Default.");
+			}
+		}
 		return map;
 	}
 		
@@ -143,7 +152,7 @@ public class CommandRegistry<T extends GenericCommand>
 		return null;
 	}
 	
-	public String getCommandName(Class<T> cls)
+	public String getCommandName(Class<? extends GenericCommand> cls)
 	{
 		for (CommandInfo<T> info : commands)
 			if (info.getCommandClass().equals(cls))

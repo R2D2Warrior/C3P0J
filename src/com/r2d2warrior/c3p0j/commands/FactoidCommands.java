@@ -9,7 +9,7 @@ import org.pircbotx.PircBotX;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.handling.FactoidManager;
 
-@Command(name="factoids", desc="Factoid management command.", syntax="factoids <add|del|list> [factoid] [data]")
+@Command(name="factoids", desc="Factoid management command.", syntax="factoids <add|del|list> [factoid] [data]", requiresArgs=true)
 public class FactoidCommands extends GenericCommand
 {
 	public FactoidCommands(CommandEvent<PircBotX> event)
