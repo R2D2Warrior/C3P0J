@@ -11,6 +11,7 @@ import com.r2d2warrior.c3p0j.commands.GenericCommand;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -28,6 +29,7 @@ public class CommandInfo<T extends GenericCommand>
 	@Getter(AccessLevel.NONE)
 	private boolean requiresArgs;
 	private HashMap<String, Method> methods;
+	@Setter(AccessLevel.PROTECTED)
 	private Class<T> commandClass;
 	
 	@SuppressWarnings("unchecked")
