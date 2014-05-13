@@ -14,7 +14,6 @@ import org.reflections.Reflections;
 
 import com.r2d2warrior.c3p0j.commands.Command;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
-import com.r2d2warrior.c3p0j.utils.DynaCode;
 import com.r2d2warrior.c3p0j.utils.Utils;
 import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
@@ -35,18 +34,6 @@ public class CommandRegistry<T extends GenericCommand>
 		catch (ReflectiveOperationException e)
 		{
 			e.printStackTrace();
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected void reload()
-	{
-		DynaCode dyn = new DynaCode(GenericCommand.class.getClassLoader());
-		for (CommandInfo<T> info : commands)
-		{
-			Class<? extends GenericCommand> cls = 
-					((GenericCommand)dyn.newProxyInstance(GenericCommand.class, info.getClass().getCanonicalName())).getClass();
-			info.setCommandClass((Class<T>)cls);
 		}
 	}
 	
