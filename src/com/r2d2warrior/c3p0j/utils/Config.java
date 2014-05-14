@@ -1,5 +1,7 @@
 package com.r2d2warrior.c3p0j.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,30 +22,47 @@ import com.cedarsoftware.util.io.JsonWriter;
 import com.r2d2warrior.c3p0j.listeners.AddListener;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class Config
 {
 	@Getter
 	private Map<String, Map<String, Object>> map;
 	private String fileName;
 	
+	public Config()
+	{
+		this("config.json");
+	}
+	
 	public Config(String fileName)
 	{
 		this.fileName = fileName;
+		File temp = new File(fileName);
+		if (!temp.exists())
+		{
+			try
+			{
+				temp.createNewFile();
+				throw new FileNotFoundException("Blank config file created (" + fileName + "). Please add all configuration "
+						+ "information to this blank file according to example-config.json");
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		this.map = getFileMap();
 	}
 	
 	public void update(PircBotX bot)
 	{
-		updateFileMap(map);
+		updateFileFromMap(map);
 		updateBotConfiguration(bot);
 	}
 	
 	public void updateFile()
 	{
-		updateFileMap(map);
+		updateFileFromMap(map);
 	}
 	
 	public String getString(String superKey, String subKey)
@@ -113,7 +132,7 @@ public class Config
 	
 	public void updateBotConfiguration(PircBotX bot)
 	{
-		updateFileMap(map);
+		updateFileFromMap(map);
 		try
 		{
 			Field confField = bot.getClass().getDeclaredField("configuration");
@@ -165,9 +184,8 @@ public class Config
 		return null;
 	}
 	
-	private void updateFileMap(Map<String, Map<String, Object>> newMap)
+	private void updateFileFromMap(Map<String, Map<String, Object>> newMap)
 	{
-		
 		try
 		{
 			FileWriter writer = new FileWriter(fileName);
