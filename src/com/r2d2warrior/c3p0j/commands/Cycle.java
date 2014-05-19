@@ -4,7 +4,7 @@ import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="cycle", desc="Parts and rejoins current or specified channel", syntax="cycle [#channel]", adminOnly=true)
+@Command(name="cycle", desc="Parts and rejoins current or specified channel", syntax="cycle [#channel]", minGroup="mod")
 public class Cycle extends GenericCommand
 {
 	

@@ -46,6 +46,7 @@ public class Utils
 			
 			i.eval("import com.r2d2warrior.c3p0j.utils.Utils");
 			i.eval("import com.r2d2warrior.c3p0j.utils.WebUtils");
+			i.eval("import com.r2d2warrior.c3p0j.utils.Permissions");
 			i.eval("import org.pircbotx.*");
 			i.eval("import java.lang.reflect.*");
 			i.eval("import java.util.*");

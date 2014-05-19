@@ -8,7 +8,7 @@ import bsh.Interpreter;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.Utils;
 
-@Command(name="eval", desc="Evaluate a method within PircBotX", syntax="eval <code>", requiresArgs=true, adminOnly=true)
+@Command(name="eval", desc="Evaluate a method within PircBotX", syntax="eval <code>", requiresArgs=true, minGroup="admin")
 public class Eval extends GenericCommand
 {
 	

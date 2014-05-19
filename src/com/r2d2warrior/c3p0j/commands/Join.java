@@ -4,7 +4,7 @@ import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="join", desc="Joins specified channel", syntax="join <#channel>", requiresArgs=true, adminOnly=true)
+@Command(name="join", desc="Joins specified channel", syntax="join <#channel>", requiresArgs=true, minGroup="mod")
 public class Join extends GenericCommand
 {
 	

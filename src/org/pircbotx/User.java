@@ -19,13 +19,18 @@
 package org.pircbotx;
 
 import org.pircbotx.snapshot.UserSnapshot;
+
 import com.google.common.collect.ImmutableSortedSet;
+import com.r2d2warrior.c3p0j.utils.Permissions;
+
 import java.util.UUID;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+
 import org.apache.commons.lang3.concurrent.AtomicSafeInitializer;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.pircbotx.hooks.WaitForQueue;
@@ -243,8 +248,8 @@ public class User implements Comparable<User> {
 		return awayMessage != null;
 	}
 	
-	public boolean isAdmin()
+	public Permissions.Group getGroup()
 	{
-		return bot.getConfiguration().getAdminAccounts().contains(account);
+		return bot.getPermissions().getUserGroup(account);
 	}
 }

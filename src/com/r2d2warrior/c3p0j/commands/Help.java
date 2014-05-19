@@ -29,20 +29,11 @@ public class Help extends GenericCommand
 			event.respond("Syntax infomation -- Required: <arg>, Optional: [arg]");
 			
 			List<String> commandList = new ArrayList<String>();
-			List<String> adminCommands = new ArrayList<String>();
 			
 			for (CommandInfo<GenericCommand> info : event.getBot().getCommandRegistry().getCommands())
-			{
-				if (!info.isAdminOnly())
-					commandList.add(info.getName());
-				else if (event.getUser().isAdmin())
-					adminCommands.add(info.getName());
-			}
-			
+				commandList.add(info.getName());
+
 			event.respond("Commands: " + StringUtils.join(commandList, ", "));
-			
-			if (event.getUser().isAdmin())
-				event.respondToUser("Admin Commands: " + StringUtils.join(adminCommands, ", "));
 		}
 		else
 		{

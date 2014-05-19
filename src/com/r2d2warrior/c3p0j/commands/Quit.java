@@ -5,7 +5,7 @@ import org.pircbotx.PircBotX;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
 // TODO Restart bot command? (possible?)
-@Command(name="quit", desc="Disconnects the bot from the server", syntax = "quit [message]", adminOnly=true)
+@Command(name="quit", desc="Disconnects the bot from the server", syntax = "quit [message]", minGroup="admin")
 public class Quit extends GenericCommand
 {
 	

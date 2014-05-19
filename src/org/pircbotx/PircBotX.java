@@ -23,6 +23,7 @@ import com.google.common.primitives.Ints;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
 import com.r2d2warrior.c3p0j.handling.CommandRegistry;
 import com.r2d2warrior.c3p0j.handling.FactoidManager;
+import com.r2d2warrior.c3p0j.utils.Permissions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -99,6 +100,8 @@ public class PircBotX implements Comparable<PircBotX> {
 	protected final CommandRegistry<GenericCommand> commandRegistry; // Added by R2D2Warrior
 	@Getter
 	protected final FactoidManager factoidManager; // Added by R2D2Warrior
+	@Getter
+	protected final Permissions permissions; // Added by R2D2Warrior
 	/**
 	 * User-Channel mapper
 	 */
@@ -147,6 +150,7 @@ public class PircBotX implements Comparable<PircBotX> {
 		this.inputParser = configuration.getBotFactory().createInputParser(this);
 		this.commandRegistry = configuration.getBotFactory().createCommandRegistry(this);
 		this.factoidManager = new FactoidManager();
+		this.permissions = new Permissions();
 	}
 
 	/**

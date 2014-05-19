@@ -20,14 +20,17 @@ import com.cedarsoftware.util.io.JsonWriter;
 import com.r2d2warrior.c3p0j.listeners.AddListener;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class Config
 {
 	@Getter
 	private Map<String, Map<String, Object>> map;
 	private String fileName;
+	
+	public Config()
+	{
+		this("config.json");
+	}
 	
 	public Config(String fileName)
 	{

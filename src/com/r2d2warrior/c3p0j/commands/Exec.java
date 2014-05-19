@@ -8,7 +8,7 @@ import bsh.Interpreter;
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 import com.r2d2warrior.c3p0j.utils.Utils;
 
-@Command(name="exec", desc="Execute a method within PircBotX", syntax="exec <code>", requiresArgs=true, adminOnly=true)
+@Command(name="exec", desc="Execute a method within PircBotX", syntax="exec <code>", requiresArgs=true, minGroup="admin")
 public class Exec extends GenericCommand
 {
 	
