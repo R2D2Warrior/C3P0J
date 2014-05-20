@@ -2,10 +2,11 @@ package com.r2d2warrior.c3p0j.commands;
 
 import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.PircBotX;
-import com.r2d2warrior.c3p0j.handling.CommandEvent;
-import com.r2d2warrior.c3p0j.utils.Config;
 
-@Command(name="perm", desc="Manage Permissions", syntax="perm <set|rem|list> [user] <groupName>")
+import com.r2d2warrior.c3p0j.handling.CommandEvent;
+import com.r2d2warrior.c3p0j.utils.Permissions;
+
+@Command(name="perm", desc="Manage Permissions", syntax="perm <set|rem|list|get> [user] <groupName>")
 public class PermCommand extends GenericCommand
 {
 	public PermCommand(CommandEvent<PircBotX> event)
@@ -16,7 +17,15 @@ public class PermCommand extends GenericCommand
 	@Command.Default
 	public void help()
 	{
-		
+		event.respondToUser("SYNTAX:" + event.getCommandInfo().getSyntax());
+	}
+	
+	@Command.Sub(name="get", requiresArgs=true)
+	public void get()
+	{
+		String account = event.getArgumentList().get(0);
+		Permissions.Group group = bot.getPermissions().getUserGroup(account);
+		event.respond(account + " is in group " + group.getName());
 	}
 	
 	@Command.Sub(name="list", alias="l")
@@ -49,15 +58,15 @@ public class PermCommand extends GenericCommand
 			String account = event.getArgumentList().get(0);
 			String groupName = event.getArgumentList().get(1);
 			bot.getPermissions().setUserGroup(account, groupName);
+			event.respondToUser("Set group of " + account + " to " + groupName.toUpperCase() + ".");
 		}
 	}
 	
-	/*@Command.Sub(name="remove", alias={"rem", "del", "delete"}, requiresArgs=true, minGroup="owner")
+	@Command.Sub(name="remove", alias={"rem", "del", "delete"}, requiresArgs=true, minGroup="owner")
 	public void remove()
 	{
-		Config c = new Config("config.json");
-		c.getStringList("bot", "adminAccounts").removeAll(event.getArgumentList());
-		c.update(bot);
-		event.respondToUser("Removed admins: " + StringUtils.join(event.getArgumentList(), ", "));
-	}*/
+		String account = event.getArgumentList().get(0);
+		bot.getPermissions().removeUser(account);
+		event.respondToUser("Removed " + account + " from group " + bot.getPermissions().getUserGroup(account).getName().toUpperCase());
+	}
 }

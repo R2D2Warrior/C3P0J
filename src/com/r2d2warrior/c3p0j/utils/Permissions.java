@@ -2,6 +2,7 @@ package com.r2d2warrior.c3p0j.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -54,17 +55,32 @@ public class Permissions
 	public Group getUserGroup(String account)
 	{
 		for (Group g : groups)
-			if (g.getUsers().contains(account))
-				return g;
+		{
+			for (String user : g.getUsers())
+				if (user.equalsIgnoreCase(account))
+					return g;
+		}
 		return DEFAULT_GROUP;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void setUserGroup(String account, String groupName)
 	{
-		Map<String, Object> group = (Map<String, Object>) groupConfig.get(groupName);
-		List<String> users = (List<String>) group.get("users");
-		users.add(account);
+		removeUser(account);
+		getUsersFromMap(groupName).add(account);
+		update();
+	}
+	
+	public void removeUser(String account)
+	{
+		Iterator<String> iter = getUsersFromMap(getUserGroup(account).getName()).iterator();
+		while (iter.hasNext())
+		{
+			if (iter.next().equalsIgnoreCase(account))
+			{
+				iter.remove();
+				break;
+			}
+		}
 		update();
 	}
 	
@@ -86,6 +102,14 @@ public class Permissions
 		
 		groups.add(DEFAULT_GROUP);
 		groupNames.add("DEFAULT");
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<String> getUsersFromMap(String groupName)
+	{
+		Map<String, Object> group = (Map<String, Object>) groupConfig.get(groupName);
+		List<String> users = (List<String>) group.get("users");
+		return users;
 	}
 	
 	@Getter
