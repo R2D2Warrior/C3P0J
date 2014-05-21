@@ -24,7 +24,7 @@ public class Configuration<B extends C3P0J> extends org.pircbotx.Configuration<C
 	protected final List<String> blockedChannels;
 	protected final String factoidPrefix;
 	
-	protected Configuration(Builder<C3P0J> builder)
+	protected Configuration(Builder<B> builder)
 	{
 		super(builder);
 		this.adminAccounts  = builder.getAdminAccounts();
@@ -70,7 +70,7 @@ public class Configuration<B extends C3P0J> extends org.pircbotx.Configuration<C
 			this.factoidPrefix = configuration.getFactoidPrefix();
 		}
 		
-		public Builder(Builder<C3P0J> otherBuilder)
+		public Builder(Builder<B> otherBuilder)
 		{
 			super(otherBuilder);
 			this.adminAccounts = otherBuilder.getAdminAccounts();
@@ -124,6 +124,11 @@ public class Configuration<B extends C3P0J> extends org.pircbotx.Configuration<C
 		public void addBlockedChannels(String... channels)
 		{
 			getBlockedChannels().addAll(Arrays.asList(channels));
+		}
+		
+		public Configuration<B> buildConfiguration()
+		{
+			return new Configuration<B>(this);
 		}
 	}
 }

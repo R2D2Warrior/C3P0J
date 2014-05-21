@@ -13,12 +13,13 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.Listener;
 import org.reflections.Reflections;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import com.r2d2warrior.c3p0j.C3P0J;
+import com.r2d2warrior.c3p0j.core.Configuration;
 import com.r2d2warrior.c3p0j.listeners.AddListener;
 
 import lombok.Getter;
@@ -76,9 +77,9 @@ public class ConfigFile
 		return (List<String>) map.get(superKey).get(subKey);
 	}
 	
-	public Configuration<PircBotX> buildBotConfiguration() 
+	public Configuration<C3P0J> buildBotConfiguration() 
 	{
-		Configuration.Builder<PircBotX> builder = new Configuration.Builder<>();
+		Configuration.Builder<C3P0J> builder = new Configuration.Builder<>();
 		
 		for (String superKey : map.keySet())
 		{
@@ -145,7 +146,7 @@ public class ConfigFile
 		}
 	}
 	
-	public void addListeners(Configuration.Builder<PircBotX> builder)
+	public void addListeners(Configuration.Builder<C3P0J> builder)
 	{
  		try
  		{
@@ -156,7 +157,7 @@ public class ConfigFile
 				{
 					// TODO Figure out how to avoid this warning: "Unchecked cast from capture#1-of ? to Listener<PircBotX>"
 					@SuppressWarnings("unchecked")
-					Listener<PircBotX> listener = (Listener<PircBotX>) cls.newInstance();
+					Listener<C3P0J> listener = (Listener<C3P0J>) cls.newInstance();
 					builder.addListener(listener);
 				}
 			}
