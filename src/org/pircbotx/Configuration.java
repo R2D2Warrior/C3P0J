@@ -20,22 +20,16 @@ package org.pircbotx;
 
 import static com.google.common.base.Preconditions.*;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Maps;
-import com.r2d2warrior.c3p0j.commands.GenericCommand;
-import com.r2d2warrior.c3p0j.handling.CommandRegistry;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -119,11 +113,6 @@ public class Configuration<B extends PircBotX> {
 	protected final ImmutableList<CapHandler> capHandlers;
 	protected final ImmutableSortedMap<Character, ChannelModeHandler> channelModeHandlers;
 	protected final BotFactory botFactory;
-	//New data added by R2D2Warrior
-	protected final List<String> adminAccounts;
-	protected final BiMap<String, String> prefixes;
-	protected final List<String> blockedChannels;
-	protected final String factoidPrefix;
 
 	/**
 	 * Use {@link Configuration.Builder#build() }.
@@ -196,11 +185,6 @@ public class Configuration<B extends PircBotX> {
 		this.channelModeHandlers = channelModeHandlersBuilder.build();
 		this.shutdownHookEnabled = builder.isShutdownHookEnabled();
 		this.botFactory = builder.getBotFactory();
-		//New added by R2D2Warrior
-		this.adminAccounts  = builder.getAdminAccounts();
-		this.prefixes = HashBiMap.create(builder.getPrefixes());
-		this.blockedChannels = builder.getBlockedChannels();
-		this.factoidPrefix = builder.getFactoidPrefix();
 	}
 
 	@Accessors(chain = true)
@@ -376,24 +360,6 @@ public class Configuration<B extends PircBotX> {
 		 */
 		protected final List<CapHandler> capHandlers = new ArrayList<CapHandler>();
 		protected final List<ChannelModeHandler> channelModeHandlers = new ArrayList<ChannelModeHandler>();
-		
-		// New Things Added by R2D2Warrior
-		/**
-		 * List of the account names of bot admins
-		 */
-		protected List<String> adminAccounts = new ArrayList<>();
-		/**
-		 * Map of prefixes and the response command to be use in sendrawline
-		 */
-		protected Map<String, String> prefixes = Maps.newHashMap();
-		/**
-		 * List of channels not to join or send messages to
-		 */
-		protected List<String> blockedChannels = new ArrayList<>();
-		/**
-		 * The prefix used to call factoids
-		 */
-		protected String factoidPrefix;
 		/**
 		 * The {@link BotFactory} to use
 		 */
@@ -452,11 +418,6 @@ public class Configuration<B extends PircBotX> {
 			this.channelModeHandlers.addAll(configuration.getChannelModeHandlers().values());
 			this.shutdownHookEnabled = configuration.isShutdownHookEnabled();
 			this.botFactory = configuration.getBotFactory();
-			//Added by R2D2Warrior
-			this.adminAccounts = configuration.getAdminAccounts();
-			this.prefixes = configuration.getPrefixes();
-			this.blockedChannels = configuration.getBlockedChannels();
-			this.factoidPrefix = configuration.getFactoidPrefix();
 		}
 		/**
 		 * Copy values from another builder. 
@@ -503,11 +464,6 @@ public class Configuration<B extends PircBotX> {
 			this.channelModeHandlers.addAll(otherBuilder.getChannelModeHandlers());
 			this.shutdownHookEnabled = otherBuilder.isShutdownHookEnabled();
 			this.botFactory = otherBuilder.getBotFactory();
-			//Added by R2D2Warrior;
-			this.adminAccounts = otherBuilder.getAdminAccounts();
-			this.prefixes = otherBuilder.getPrefixes();
-			this.blockedChannels = otherBuilder.getBlockedChannels();
-			this.factoidPrefix = otherBuilder.getFactoidPrefix();
 		}
 
 		/**
@@ -572,60 +528,7 @@ public class Configuration<B extends PircBotX> {
 			return this;
 		}
 		
-		//ADDED BY R2D2WARRIOR
-		public Builder<B> addAutoJoinChannels(String... channels)
-		{
-			for (String c : channels)
-				addAutoJoinChannel(c);
-			return this;
-		}
-		/**
-		 * Utility method for <code>{@link #getAdminAccounts().add(account)</code>
-		 * @param account
-		 * @return 
-		 */
-		public Builder<B> addAdminAccount(String account)
-		{
-			getAdminAccounts().add(account);
-			return this;
-		}
 		
-		public Builder<B> addAdminAccounts(String... accounts)
-		{
-			getAdminAccounts().addAll(Arrays.asList(accounts));
-			return this;
-		}
-		
-		/**
-		 * Utility method for <code>{@link #getPrefixes().put(pre, command)</code>
-		 * @param pre
-		 * @param command
-		 * @return 
-		 */
-		public Builder<B> addPrefix(String pre, String command)
-		{
-			getPrefixes().put(pre, command);
-			return this;
-		}
-		
-		/**
-		 * Utility method for <code>{@link #getBlockedChannels().put(channel)</code>
-		 * @param channel
-		 * @return 
-		 */
-		public Builder<B> addBlockedChannel(String channel)
-		{
-			getBlockedChannels().add(channel);
-			return this;
-		}
-		
-		public Builder<B> addBlockedChannels(String... channels)
-		{
-			getBlockedChannels().addAll(Arrays.asList(channels));
-			return this;
-		}
-		//--
-
 		/**
 		 * Utility method to set server hostname and port
 		 * @param hostname
@@ -757,12 +660,6 @@ public class Configuration<B extends PircBotX> {
 
 		public InputParser createInputParser(PircBotX bot) {
 			return new InputParser(bot);
-		}
-		
-		// Added by R2D2Warrior
-		public CommandRegistry<GenericCommand> createCommandRegistry(PircBotX bot)
-		{
-			return new CommandRegistry<GenericCommand>(bot);
 		}
 
 		public DccHandler createDccHandler(PircBotX bot) {

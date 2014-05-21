@@ -44,7 +44,7 @@ public class WolframQuery
 	{
 		// Create the engine and appID
 		this.waEngine = new WAEngine();
-		this.appID = new Config("config.json").getString("api", "wolfram");
+		this.appID = new ConfigFile("config.json").getString("api", "wolfram");
 		
 		// Apply the appID and add plaintext format
 		this.waEngine.setAppID(appID);

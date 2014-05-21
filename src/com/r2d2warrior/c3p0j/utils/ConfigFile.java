@@ -23,18 +23,18 @@ import com.r2d2warrior.c3p0j.listeners.AddListener;
 
 import lombok.Getter;
 
-public class Config
+public class ConfigFile
 {
 	@Getter
 	private Map<String, Map<String, Object>> map;
 	private String fileName;
 	
-	public Config()
+	public ConfigFile()
 	{
 		this("config.json");
 	}
 	
-	public Config(String fileName)
+	public ConfigFile(String fileName)
 	{
 		this.fileName = fileName;
 		File temp = new File(fileName);

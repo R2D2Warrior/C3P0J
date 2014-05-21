@@ -64,7 +64,7 @@ public class WebUtils
 	 */
 	public static String shortenURL(String url) throws IOException, ParseException
 	{
-		String apiKey = new Config("config.json").getString("api", "googl");
+		String apiKey = new ConfigFile("config.json").getString("api", "googl");
 		String apiURL = "https://www.googleapis.com/urlshortener/v1/url?key=" + apiKey;
 		URLConnection conn = new URL(apiURL).openConnection();
 		

@@ -9,7 +9,7 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.User;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
-import com.r2d2warrior.c3p0j.utils.Config;
+import com.r2d2warrior.c3p0j.utils.ConfigFile;
 
 @Command(name="admins", desc="Lists bot admin accounts")
 public class Admins extends GenericCommand
@@ -44,7 +44,7 @@ public class Admins extends GenericCommand
 	@Command.Sub(name="add", requiresArgs=true, adminOnly=true)
 	public void add()
 	{
-		Config c = new Config("config.json");
+		ConfigFile c = new ConfigFile("config.json");
 		c.getStringList("bot", "adminAccounts").addAll(event.getArgumentList());
 		c.update(bot);
 		event.respondToUser("Added admins: " + StringUtils.join(event.getArgumentList(), ", "));
@@ -53,7 +53,7 @@ public class Admins extends GenericCommand
 	@Command.Sub(name="remove", alias={"rem", "del", "delete"}, requiresArgs=true, adminOnly=true)
 	public void remove()
 	{
-		Config c = new Config("config.json");
+		ConfigFile c = new ConfigFile("config.json");
 		c.getStringList("bot", "adminAccounts").removeAll(event.getArgumentList());
 		c.update(bot);
 		event.respondToUser("Removed admins: " + StringUtils.join(event.getArgumentList(), ", "));
