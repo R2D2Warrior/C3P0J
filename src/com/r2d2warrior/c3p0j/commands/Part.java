@@ -4,7 +4,7 @@ import org.pircbotx.PircBotX;
 
 import com.r2d2warrior.c3p0j.handling.CommandEvent;
 
-@Command(name="part", desc="Parts current or specified channel", syntax="part [#channel]", adminOnly=true)
+@Command(name="part", desc="Parts current or specified channel", syntax="part [#channel]", minGroup="mod")
 public class Part extends GenericCommand
 {
 	

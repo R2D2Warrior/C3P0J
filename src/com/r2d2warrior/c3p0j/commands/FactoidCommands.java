@@ -23,7 +23,7 @@ public class FactoidCommands extends GenericCommand
 		event.respondToUser("SYNTAX: " + event.getCommandInfo().getSyntax());
 	}
 	
-	@Command.Sub(name="add", adminOnly=true, requiresArgs=true)
+	@Command.Sub(name="add", minGroup="mod", requiresArgs=true)
 	public void remember()
 	{
 		FactoidManager factoidManager = bot.getFactoidManager();
@@ -50,7 +50,7 @@ public class FactoidCommands extends GenericCommand
 		}
 	}
 	
-	@Command.Sub(name="del", adminOnly=true, requiresArgs=true)
+	@Command.Sub(name="del", minGroup="mod", requiresArgs=true)
 	public void forget()
 	{
 		FactoidManager factoidManager = bot.getFactoidManager();

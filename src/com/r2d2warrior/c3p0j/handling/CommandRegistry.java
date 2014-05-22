@@ -14,6 +14,7 @@ import org.reflections.Reflections;
 
 import com.r2d2warrior.c3p0j.commands.Command;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
+import com.r2d2warrior.c3p0j.utils.Permissions.Group;
 import com.r2d2warrior.c3p0j.utils.Utils;
 import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
@@ -52,7 +53,7 @@ public class CommandRegistry<T extends GenericCommand>
 
 				commands.add(new CommandInfo<T>(
 						cmd.name(), cmd.alias(), cmd.desc(), cmd.syntax(),
-						cmd.adminOnly(), cmd.requiresArgs(), methodMap, cls)
+						cmd.minGroup(), cmd.requiresArgs(), methodMap, cls)
 						);
 			}
 		}
@@ -104,7 +105,8 @@ public class CommandRegistry<T extends GenericCommand>
 		Class<T> cls = getCommandClass(event.getCommandName());
 		CommandInfo<T> info = getCommandInfo(event.getCommandName());
 		
-		if (info.isAdminOnly() && !event.getUser().isAdmin())
+		Group minGroup = event.getBot().getPermissions().getGroup(info.getMinGroup());
+		if (minGroup.getRank() < event.getUser().getGroup().getRank())
 			return noPermissionError;
 		
 		if (info.requiresArgs() && event.hasNoArgs())
@@ -120,7 +122,8 @@ public class CommandRegistry<T extends GenericCommand>
 				event.setArguments(event.getArgRange(1));
 				method = info.getMethods().get(sub.getName());
 				
-				if (sub.isAdminOnly() && !event.getUser().isAdmin())
+				Group minGroupSub = event.getBot().getPermissions().getGroup(sub.getMinGroup());
+				if (minGroupSub.getRank() < event.getUser().getGroup().getRank())
 					return noPermissionError;
 				if (sub.requiresArgs() && event.hasNoArgs())
 					return needsArgsError.replace("command", "subcommand") + info.getSyntax();

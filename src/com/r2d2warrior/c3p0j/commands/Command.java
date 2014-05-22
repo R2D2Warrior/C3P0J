@@ -1,6 +1,5 @@
 package com.r2d2warrior.c3p0j.commands;
 
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -8,7 +7,6 @@ import java.lang.annotation.ElementType;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(Commands.class)
 public @interface Command
 {
 	/** The name of the command*/
@@ -22,7 +20,7 @@ public @interface Command
 	/** If the command requires any arguments or not. Default <code>false</code>*/
 	boolean requiresArgs() default false;
 	/** If the command requires admin status to use. Default <code>false</code>*/
-	boolean adminOnly() default false;
+	String minGroup() default "DEFAULT";
 	
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
@@ -31,7 +29,7 @@ public @interface Command
 		String name();
 		String[] alias() default {};
 		boolean requiresArgs() default false;
-		boolean adminOnly() default false;
+		String minGroup() default "DEFAULT";
 	}
 	
 	@Target(ElementType.METHOD)
