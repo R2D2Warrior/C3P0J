@@ -28,5 +28,33 @@
       "CHCMATT"
     ],
     "factoidPrefix":"?"
+  },
+  "groups":{
+    "owner":{
+      "rank":1,
+      "users":[
+        "R2D2Warrior"
+      ]
+    },
+    "mod":{
+      "rank":3,
+      "users":[
+        "ChasedSpade",
+        "Liam"
+      ]
+    },
+    "admin":{
+      "rank":2,
+      "users":[
+        "Vgr255",
+        "CHCMATT"
+      ]
+    },
+    "user":{
+      "rank":4,
+      "users":[
+        "happyslayer"
+      ]
+    }
   }
 }
