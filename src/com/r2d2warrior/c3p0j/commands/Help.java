@@ -1,6 +1,5 @@
 package com.r2d2warrior.c3p0j.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,13 +26,8 @@ public class Help extends GenericCommand
 			
 			event.respond("Valid command prefixes: " + prefixes.keySet().toString());
 			event.respond("Syntax infomation -- Required: <arg>, Optional: [arg]");
-			
-			List<String> commandList = new ArrayList<String>();
-			
-			for (CommandInfo<GenericCommand> info : event.getBot().getCommandRegistry().getCommands())
-				commandList.add(info.getName());
-
-			event.respond("Commands: " + StringUtils.join(commandList, ", "));
+			List<String> availCommands = bot.getCommandRegistry().getAllCommandsForGroup(user.getGroup().getName());
+			event.respond("Commands available for your group (" + user.getGroup().getName().toUpperCase() + "): " + StringUtils.join(availCommands, ", "));
 		}
 		else
 		{

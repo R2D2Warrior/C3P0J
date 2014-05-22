@@ -2,18 +2,24 @@ package com.r2d2warrior.c3p0j.handling;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import lombok.Getter;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pircbotx.PircBotX;
 import org.reflections.Reflections;
 
 import com.r2d2warrior.c3p0j.commands.Command;
 import com.r2d2warrior.c3p0j.commands.GenericCommand;
+import com.r2d2warrior.c3p0j.utils.Permissions;
 import com.r2d2warrior.c3p0j.utils.Permissions.Group;
 import com.r2d2warrior.c3p0j.utils.Utils;
 import com.sun.xml.internal.txw2.IllegalAnnotationException;
@@ -144,6 +150,67 @@ public class CommandRegistry<T extends GenericCommand>
 			return commandError;
 		}
 		return "";
+	}
+	
+	public HashMap<String, List<String>> getCommandsMinGroup(String minGroupName)
+	{
+		HashMap<String, List<String>> commands = new HashMap<>();
+		for (CommandInfo<T> info : this.commands)
+		{
+			if (!info.hasSubCommands())
+			{
+				if (info.getMinGroup().equalsIgnoreCase(minGroupName))
+					commands.put(info.getName(), null);
+			}
+			else
+			{
+				List<String> subNames = getSubCommandsMinGroup(minGroupName, info.getName());
+				if (subNames.size() > 0)
+					commands.put(info.getName(), subNames);
+			}
+		}
+		return commands;
+	}
+	
+	private List<String> getSubCommandsMinGroup(String minGroupName, String commandName)
+	{
+		List<String> subNames = new ArrayList<>();
+		CommandInfo<T> info = getCommandInfo(commandName.toLowerCase());
+		for (CommandInfo<T>.Sub sub : info.getSubs().values())
+			if (sub.getMinGroup().equalsIgnoreCase(minGroupName))
+				subNames.add(sub.getName());
+		return subNames;
+	}
+	
+	public List<String> getAllCommandsForGroup(String groupName)
+	{
+		Permissions.Group group = bot.getPermissions().getGroup(groupName);
+		HashMap<String, List<String>> commands = getCommandsMinGroup(groupName);
+		for (Permissions.Group curGroup : bot.getPermissions().getGroups())
+		{
+			if (curGroup.getRank() > group.getRank())
+			{
+				HashMap<String, List<String>> curGroupCommands = getCommandsMinGroup(curGroup.getName());
+				for (Entry<String, List<String>> entry : curGroupCommands.entrySet())
+				{
+					if (commands.containsKey(entry.getKey()))
+						commands.get(entry.getKey()).addAll(entry.getValue());
+					else
+						commands.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+		
+		List<String> finalList = new ArrayList<>();
+		for (Entry<String, List<String>> entry : commands.entrySet())
+		{
+			if (entry.getValue() != null)
+				finalList.add(entry.getKey() + " (" + StringUtils.join(entry.getValue(), "/") + ")");
+			else
+				finalList.add(entry.getKey());
+		}
+		Collections.sort(finalList);
+		return finalList;
 	}
 	
 	public Class<T> getCommandClass(String name)
