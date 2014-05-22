@@ -66,7 +66,11 @@ public class PermCommand extends GenericCommand
 	public void remove()
 	{
 		String account = event.getArgumentList().get(0);
+		String oldGroup = bot.getPermissions().getUserGroup(account).getName().toUpperCase();
 		bot.getPermissions().removeUser(account);
-		event.respondToUser("Removed " + account + " from group " + bot.getPermissions().getUserGroup(account).getName().toUpperCase());
+		if (oldGroup.equals(Permissions.DEFAULT_GROUP))
+			event.respondToUser("Error: " + account + " is not in a group.");
+		else
+			event.respondToUser("Removed " + account + " from group " + oldGroup);
 	}
 }

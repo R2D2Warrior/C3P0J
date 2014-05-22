@@ -20,7 +20,7 @@ public class Permissions
 	private List<Group> groups;
 	private List<String> groupNames;
 	@Getter(AccessLevel.NONE)
-	public final Group DEFAULT_GROUP = new Group("DEFAULT", new ArrayList<String>(), 100);
+	public static final Group DEFAULT_GROUP = new Permissions().new Group("DEFAULT", new ArrayList<String>(), 100);
 	
 	public Permissions()
 	{
@@ -72,7 +72,11 @@ public class Permissions
 	
 	public void removeUser(String account)
 	{
-		Iterator<String> iter = getUsersFromMap(getUserGroup(account).getName()).iterator();
+		Group userGroup = getUserGroup(account);
+		if (userGroup.equals(DEFAULT_GROUP))
+				return;
+		
+		Iterator<String> iter = getUsersFromMap(userGroup.getName()).iterator();
 		while (iter.hasNext())
 		{
 			if (iter.next().equalsIgnoreCase(account))
