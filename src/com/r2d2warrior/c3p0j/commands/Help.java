@@ -18,6 +18,7 @@ public class Help extends GenericCommand
 		super(event);
 	}
 	
+	@Command.Default
 	public void execute()
 	{
 		if (event.hasNoArgs())
@@ -26,7 +27,7 @@ public class Help extends GenericCommand
 			
 			event.respond("Valid command prefixes: " + prefixes.keySet().toString());
 			event.respond("Syntax infomation -- Required: <arg>, Optional: [arg]");
-			List<String> availCommands = bot.getCommandRegistry().getAllCommandsForGroup(user.getGroup().getName());
+			List<String> availCommands = bot.getCommandRegistry().getCommandsForGroup(user.getGroup().getName());
 			event.respond("Commands available for your group (" + user.getGroup().getName().toUpperCase() + "): " + StringUtils.join(availCommands, ", "));
 		}
 		else
@@ -42,5 +43,16 @@ public class Help extends GenericCommand
 			else
 				event.respondToUser("No such command: " + cmd);
 		}
+	}
+	
+	@Command.Sub(name="group", requiresArgs=true)
+	public void group()
+	{
+		String groupName = event.getArgumentList().get(0);
+		if (bot.getPermissions().getGroup(groupName) != null)
+			event.respond("Commands for minimum group " + groupName.toUpperCase() + ": " +
+					StringUtils.join(bot.getCommandRegistry().getCommandsMinGroup(groupName), ", "));
+		else
+			event.respondToUser("Group does not exist: " + groupName);
 	}
 }
